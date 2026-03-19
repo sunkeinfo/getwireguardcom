@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="GetWireGuard pricing - Shared and Dedicated WireGuard VPN plans with 7-day free trial.">
+    <title>Pricing - GetWireGuard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/templatemo-topic-listing.css" rel="stylesheet">
+    <link href="css/sprites.css" rel="stylesheet">
+    <style>
+        .plan-card { border-radius: 12px; transition: transform .2s; }
+        .plan-card:hover { transform: translateY(-4px); }
+        .plan-card.featured { border: 2px solid #f9a826; }
+        .plan-price { font-size: 2.4rem; font-weight: 700; color: #2d6a4f; }
+        .node-btn { border: 1px solid #dee2e6; border-radius: 6px; padding: 6px 12px; margin: 3px; cursor: pointer; background: #fff; font-size: .85rem; transition: all .15s; }
+        .node-btn:hover, .node-btn.active { background: #f9a826; border-color: #f9a826; color: #fff; }
+        .region-title { font-weight: 600; margin-top: 12px; margin-bottom: 6px; font-size: .9rem; color: #555; }
+        .billing-toggle .btn { min-width: 120px; }
+        .badge-free { background: #198754; color: #fff; font-size: .8rem; padding: 4px 10px; border-radius: 20px; }
+        #order-summary { background: #f8f9fa; border-radius: 10px; padding: 20px; position: sticky; top: 80px; }
+    </style>
+</head>
+<body class="topics-listing-page" id="top">
+<main>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand p-0" href="index.html">
+            <span class="logo-wrap"><span class="logo-sprite"></span></span>
+        </a>
+        <div class="d-lg-none ms-auto me-4"><a href="pricing.html" class="btn custom-btn btn-sm">Get Started</a></div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-lg-5 me-lg-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="pricing.html">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link" href="download.html">Download</a></li>
+                <li class="nav-item"><a class="nav-link" href="tutorial.html">Tutorial</a></li>
+                <li class="nav-item"><a class="nav-link" href="faq.html">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="faq.html#contact">Contact</a></li>
+            </ul>
+            <div class="d-none d-lg-block"><a href="pricing.html" class="btn custom-btn">Start Free Trial</a></div>
+        </div>
+    </div>
+</nav>
+
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item active">Pricing</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white">Plans &amp; Pricing</h2>
+                <p class="text-white">Start your 7-day FREE trial. Cancel anytime.</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section-padding">
+    <div class="container">
+
+        <!-- Billing Toggle -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <span class="badge-free me-2">🆓 7 Days FREE Trial</span>
+                <p class="mt-3 mb-2 fw-semibold">Billing Cycle</p>
+                <div class="billing-toggle btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active" id="btn-monthly" onclick="setBilling('monthly')">Monthly</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btn-yearly" onclick="setBilling('yearly')">Yearly <span class="badge bg-success ms-1">Save 16%</span></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center mb-5">
+            <!-- Shared Plan -->
+            <div class="col-lg-5 col-md-6">
+                <div class="plan-card custom-block bg-white shadow-lg p-4 h-100" id="card-shared" onclick="selectPlan('shared')" style="cursor:pointer;">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="badge-free">🆓 7 Days FREE</span>
+                            <h4 class="mt-2">🌐 Shared Nodes</h4>
+                            <p class="text-muted small">Perfect for daily browsing and streaming</p>
+                        </div>
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="radio" name="plan" id="plan-shared" value="shared">
+                        </div>
+                    </div>
+                    <div class="plan-price" id="price-shared">$2.99<span class="fs-6 fw-normal text-muted">/month</span></div>
+                    <p class="text-muted small" id="price-shared-alt">or $29.99/year</p>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-1">✓ Access to all shared servers</li>
+                        <li class="mb-1">✓ Unlimited bandwidth</li>
+                        <li class="mb-1">✓ Military-grade encryption</li>
+                        <li class="mb-1">✓ No-logs policy</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Dedicated Plan -->
+            <div class="col-lg-5 col-md-6">
+                <div class="plan-card featured custom-block bg-white shadow-lg p-4 h-100" id="card-dedicated" onclick="selectPlan('dedicated')" style="cursor:pointer;">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="badge-free">🆓 7 Days FREE</span>
+                            <h4 class="mt-2">⚡ Dedicated Line</h4>
+                            <p class="text-muted small">Ultimate performance with fixed IP</p>
+                        </div>
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="radio" name="plan" id="plan-dedicated" value="dedicated">
+                        </div>
+                    </div>
+                    <div class="plan-price" id="price-dedicated">$9.99<span class="fs-6 fw-normal text-muted">/month</span></div>
+                    <p class="text-muted small" id="price-dedicated-alt">or $99.99/year</p>
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-1">✓ Your exclusive VPN tunnel</li>
+                        <li class="mb-1">✓ Fixed dedicated IP address</li>
+                        <li class="mb-1">✓ Maximum performance &amp; stability</li>
+                        <li class="mb-1">✓ Perfect for remote work</li>
+                        <li class="mb-1">✓ Priority customer support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Node Selection + Order Summary -->
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <h5 class="mb-3">Select Your Server Location</h5>
+
+                <div class="region-title">🌎 Americas</div>
+                <button class="node-btn" onclick="selectNode(this,'US N. Virginia')">US N. Virginia</button>
+                <button class="node-btn" onclick="selectNode(this,'US Ohio')">US Ohio</button>
+                <button class="node-btn" onclick="selectNode(this,'US N. California')">US N. California</button>
+                <button class="node-btn" onclick="selectNode(this,'US Oregon')">US Oregon</button>
+                <button class="node-btn" onclick="selectNode(this,'Canada Calgary')">Canada Calgary</button>
+                <button class="node-btn" onclick="selectNode(this,'Canada Central')">Canada Central</button>
+                <button class="node-btn" onclick="selectNode(this,'Mexico Central')">Mexico Central</button>
+                <button class="node-btn" onclick="selectNode(this,'São Paulo')">São Paulo</button>
+
+                <div class="region-title">🌏 Asia Pacific</div>
+                <button class="node-btn" onclick="selectNode(this,'Hong Kong')">Hong Kong</button>
+                <button class="node-btn" onclick="selectNode(this,'Taipei')">Taipei</button>
+                <button class="node-btn" onclick="selectNode(this,'Tokyo')">Tokyo</button>
+                <button class="node-btn" onclick="selectNode(this,'Seoul')">Seoul</button>
+                <button class="node-btn" onclick="selectNode(this,'Osaka')">Osaka</button>
+                <button class="node-btn" onclick="selectNode(this,'Singapore')">Singapore</button>
+                <button class="node-btn" onclick="selectNode(this,'Malaysia')">Malaysia</button>
+                <button class="node-btn" onclick="selectNode(this,'Thailand')">Thailand</button>
+                <button class="node-btn" onclick="selectNode(this,'Jakarta')">Jakarta</button>
+                <button class="node-btn" onclick="selectNode(this,'Mumbai')">Mumbai</button>
+                <button class="node-btn" onclick="selectNode(this,'Hyderabad')">Hyderabad</button>
+                <button class="node-btn" onclick="selectNode(this,'Sydney')">Sydney</button>
+                <button class="node-btn" onclick="selectNode(this,'Melbourne')">Melbourne</button>
+
+                <div class="region-title">🌍 Europe</div>
+                <button class="node-btn" onclick="selectNode(this,'London')">London</button>
+                <button class="node-btn" onclick="selectNode(this,'Ireland')">Ireland</button>
+                <button class="node-btn" onclick="selectNode(this,'Paris')">Paris</button>
+                <button class="node-btn" onclick="selectNode(this,'Frankfurt')">Frankfurt</button>
+                <button class="node-btn" onclick="selectNode(this,'Stockholm')">Stockholm</button>
+                <button class="node-btn" onclick="selectNode(this,'Milan')">Milan</button>
+                <button class="node-btn" onclick="selectNode(this,'Spain')">Spain</button>
+                <button class="node-btn" onclick="selectNode(this,'Zurich')">Zurich</button>
+
+                <div class="region-title">🌍 Middle East &amp; Africa</div>
+                <button class="node-btn" onclick="selectNode(this,'Tel Aviv')">Tel Aviv</button>
+                <button class="node-btn" onclick="selectNode(this,'UAE')">UAE</button>
+                <button class="node-btn" onclick="selectNode(this,'Bahrain')">Bahrain</button>
+                <button class="node-btn" onclick="selectNode(this,'Cape Town')">Cape Town</button>
+            </div>
+
+            <div class="col-lg-4">
+                <div id="order-summary">
+                    <h5 class="mb-3">Order Summary</h5>
+                    <div class="mb-2">Plan: <strong id="sum-plan">— not selected —</strong></div>
+                    <div class="mb-2">Location: <strong id="sum-node">— not selected —</strong></div>
+                    <div class="mb-2">Billing: <strong id="sum-billing">Monthly</strong></div>
+                    <hr>
+                    <div class="mb-1">First 7 days: <strong class="text-success">FREE</strong></div>
+                    <div class="mb-3">Then: <strong id="sum-price">—</strong></div>
+
+                    <div id="customer-fields">
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold">Your Name *</label>
+                            <input type="text" id="customerName" class="form-control form-control-sm" placeholder="Full name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Email Address *</label>
+                            <input type="email" id="customerEmail" class="form-control form-control-sm" placeholder="you@example.com" required>
+                            <div class="form-text">Your .conf file will be sent here.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="d-flex align-items-start gap-2 small">
+                            <input type="checkbox" id="agreement" checked style="margin-top:3px;flex-shrink:0;">
+                            <span>I agree to the <a href="terms.html" target="_blank">Terms of Service</a>. Billing starts after the 7-day trial. Cancel anytime.</span>
+                        </label>
+                    </div>
+
+                    <p class="text-muted small"><i class="bi-patch-check-fill text-success"></i> 30-Day Money Back Guarantee</p>
+                    <button class="btn custom-btn w-100" id="btn-order" onclick="placeOrder()" disabled>Start Free Trial</button>
+                    <p class="text-muted small text-center mt-2">Your subscription renews automatically. Cancel anytime.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-12 mb-4 pb-2">
+                <a class="navbar-brand mb-2 p-0" href="index.html">
+                    <span class="logo-wrap-sm"><span class="logo-sprite"></span></span>
+                </a>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Product</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="pricing.html" class="site-footer-link">Pricing</a></li>
+                    <li class="site-footer-link-item"><a href="download.html" class="site-footer-link">Download</a></li>
+                    <li class="site-footer-link-item"><a href="tutorial.html" class="site-footer-link">Tutorial</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Support</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="faq.html" class="site-footer-link">FAQ</a></li>
+                    <li class="site-footer-link-item"><a href="faq.html#contact" class="site-footer-link">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Legal</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="refund-policy.html" class="site-footer-link">Refund Policy</a></li>
+                    <li class="site-footer-link-item"><a href="terms.html" class="site-footer-link">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                <p class="copyright-text mt-3">Copyright © 2025 GetWireGuard.com<br>All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery.sticky.js"></script>
+<script src="js/custom.js"></script>
+<script>
+    var selectedPlan = null, selectedNode = null, billing = 'monthly';
+    var prices = { shared: { monthly: '$2.99/month', yearly: '$29.99/year' }, dedicated: { monthly: '$9.99/month', yearly: '$99.99/year' } };
+
+    function setBilling(b) {
+        billing = b;
+        document.getElementById('btn-monthly').classList.toggle('active', b === 'monthly');
+        document.getElementById('btn-yearly').classList.toggle('active', b === 'yearly');
+        document.getElementById('price-shared').innerHTML = (b === 'monthly' ? '$2.99' : '$29.99') + '<span class="fs-6 fw-normal text-muted">/' + (b === 'monthly' ? 'month' : 'year') + '</span>';
+        document.getElementById('price-dedicated').innerHTML = (b === 'monthly' ? '$9.99' : '$99.99') + '<span class="fs-6 fw-normal text-muted">/' + (b === 'monthly' ? 'month' : 'year') + '</span>';
+        document.getElementById('sum-billing').textContent = b === 'monthly' ? 'Monthly' : 'Yearly';
+        updateSummary();
+    }
+
+    function selectPlan(p) {
+        selectedPlan = p;
+        document.getElementById('plan-shared').checked = p === 'shared';
+        document.getElementById('plan-dedicated').checked = p === 'dedicated';
+        document.getElementById('card-shared').style.outline = p === 'shared' ? '2px solid #f9a826' : '';
+        document.getElementById('card-dedicated').style.outline = p === 'dedicated' ? '2px solid #f9a826' : '';
+        document.getElementById('sum-plan').textContent = p === 'shared' ? '🌐 Shared Nodes' : '⚡ Dedicated Line';
+        updateSummary();
+    }
+
+    function selectNode(el, name) {
+        document.querySelectorAll('.node-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        selectedNode = name;
+        document.getElementById('sum-node').textContent = name;
+        updateSummary();
+    }
+
+    function updateSummary() {
+        if (selectedPlan) {
+            document.getElementById('sum-price').textContent = prices[selectedPlan][billing];
+        }
+        var email = (document.getElementById('customerEmail').value || '').trim();
+        var name  = (document.getElementById('customerName').value || '').trim();
+        document.getElementById('btn-order').disabled = !(selectedPlan && selectedNode && email && name);
+    }
+
+    // Re-check button when user types name/email
+    document.getElementById('customerEmail').addEventListener('input', updateSummary);
+    document.getElementById('customerName').addEventListener('input', updateSummary);
+
+    function placeOrder() {
+        if (!selectedPlan || !selectedNode) return;
+
+        var email = document.getElementById('customerEmail').value.trim();
+        var name  = document.getElementById('customerName').value.trim();
+        if (!email || !name) {
+            document.getElementById('customer-fields').scrollIntoView({behavior:'smooth'});
+            alert('Please enter your name and email address before proceeding.');
+            return;
+        }
+
+        var price = prices[selectedPlan][billing];
+        var planLabel = selectedPlan === 'shared' ? 'Shared Nodes' : 'Dedicated Line';
+
+        // Build confirmation overlay
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
+        overlay.innerHTML = `
+            <div style="background:#fff;padding:32px 28px;border-radius:16px;max-width:460px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+                <div style="font-size:2.8rem;margin-bottom:10px;">📋</div>
+                <h4 style="margin:0 0 18px;color:#333;">Please Confirm Your Order</h4>
+                <div style="background:#f8f9fa;border-radius:10px;padding:16px;text-align:left;margin-bottom:18px;font-size:.93rem;line-height:1.9;">
+                    <div><strong>Name:</strong> ${name}</div>
+                    <div><strong>Email:</strong> ${email}</div>
+                    <div><strong>Plan:</strong> ${planLabel}</div>
+                    <div><strong>Location:</strong> ${selectedNode}</div>
+                    <div><strong>Billing:</strong> ${billing === 'monthly' ? 'Monthly' : 'Yearly'}</div>
+                    <div><strong>Price:</strong> ${price} USD / ${billing === 'monthly' ? 'month' : 'year'}</div>
+                </div>
+                <p style="font-size:.85rem;color:#888;margin-bottom:22px;">First 7 days FREE. Subscription auto-renews after trial. Cancel anytime.</p>
+                <button id="btn-confirm-ok" style="background:linear-gradient(135deg,#28a745,#20c997);color:#fff;border:none;padding:12px 24px;border-radius:25px;font-weight:700;font-size:1rem;cursor:pointer;width:100%;margin-bottom:10px;">🎉 Start My Free Trial — $0.00 Today</button>
+                <button id="btn-confirm-cancel" style="background:#f8f9fa;color:#666;border:1px solid #ddd;padding:10px 20px;border-radius:20px;cursor:pointer;font-size:.9rem;width:100%;">❌ Go Back</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('btn-confirm-cancel').onclick = function() {
+            document.body.removeChild(overlay);
+        };
+
+        document.getElementById('btn-confirm-ok').onclick = function() {
+            document.body.removeChild(overlay);
+
+            // Send notification email
+            fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Basic MDk3YnVsdWxiZGpmbTk2OXhybXJpaml6NDM6c3c1MDFsdW1ib2w4ajNrYm1jMzJtdWd2aHNtdDBkd2NtaDQ3dDc3YXZ3enBvd3BiMTFjNXltdW1qeA=='
+                },
+                body: JSON.stringify({
+                    type: 'awsdo_com_notification',
+                    to: { id: 'snaagk@gmail.com', email: 'snaagk@gmail.com' },
+                    parameters: {
+                        comment: 'New GetWireGuard Order:\n\nName: ' + name + '\nEmail: ' + email + '\nPlan: ' + planLabel + '\nLocation: ' + selectedNode + '\nBilling: ' + billing + '\nPrice: $' + price + '\nTime: ' + new Date().toISOString()
+                    },
+                    templateId: 'awsdo_com'
+                })
+            })
+            .catch(function(err) { console.warn('Notification error:', err); });
+
+            // Redirect to PayPal
+            var itemName = encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode);
+            var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
+                + '&business=paypal2017august@sunke.info'
+                + '&item_name=' + itemName
+                + '&amount=' + price
+                + '&currency_code=USD'
+                + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
+                + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
+            window.location.href = paypalUrl;
+        };
+    }
+</script>
+</body>
+</html>

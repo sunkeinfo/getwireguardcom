@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pricing-title">Secure Checkout - MyWireGuard</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-61Y0GT23PH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-61Y0GT23PH');
+    </script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            font-family: '微軟正黑體', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.8;
+            background: #fdfdfd;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        .container {
+            max-width: none;
+            width: 100%;
+            margin: 0;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        
+        .content-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .content-wrapper {
+                padding: 0 20px;
+            }
+        }
+        
+        .checkout-container {
+            max-width: none;
+            width: 100%;
+            margin: 50px 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .card-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+        
+        .plan-summary {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .price-breakdown {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+        
+        .discount-highlight {
+            background: var(--danger-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            border-color: var(--primary-color);
+            background: #f8f9fa;
+        }
+        
+        .payment-method.selected {
+            border-color: var(--success-color);
+            background: #d4edda;
+        }
+        
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .security-badge {
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .btn-paypal {
+            background: #0070ba;
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .btn-paypal:hover {
+            background: #005ea6;
+            color: white;
+        }
+        
+        .form-control {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e9ecef;
+            z-index: -1;
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .step.active .step-circle {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        nav li {
+            margin: 0;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 768px) {
+            nav {
+                gap: 30px;
+            }
+            nav ul {
+                gap: 0;
+            }
+            nav li {
+                margin-left: 30px;
+            }
+            nav a {
+                padding: 0;
+                font-size: 16px;
+            }
+        }
+        .logo img { max-height: 40px; }
+        nav a:hover { color: #007bff; }
+        .language-selector { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .lang-btn { background: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em; transition: all 0.3s ease; }
+        .lang-btn:hover { background-color: #f0f0f0; }
+        .lang-btn.active { background-color: #007bff; color: white; border-color: #007bff; }
+        
+        .row { display: flex; flex-wrap: wrap; }
+        .col-lg-5 { width: 100%; margin-right: 0; margin-bottom: 20px; }
+        .col-lg-7 { width: 100%; }
+        
+        @media (min-width: 768px) {
+            .row { flex-wrap: nowrap; }
+            .col-lg-5 { width: 42%; margin-right: 2%; margin-bottom: 0; }
+            .col-lg-7 { width: 56%; }
+        }
+        
+        .plan-selected {
+            border: 2px solid var(--primary-color) !important;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 30px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+        
+        footer p {
+            margin: 10px 0;
+        }
+        
+        footer a {
+            color: #00aaff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="./index.html" class="logo">
+                <img src="./logo.png" alt="MyWireGuard Logo">
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="./index.html" data-i18n="nav-home">Home</a></li>
+                    <li><a href="./pricing.html" data-i18n="nav-pricing">Pricing</a></li>
+                    <li><a href="./downloads.html" data-i18n="nav-downloads">Downloads</a></li>
+                    <li><a href="./tutorials.html" data-i18n="nav-tutorials">Tutorials</a></li>
+                    <li><a href="./support.html" data-i18n="nav-support">Support</a></li>
+                </ul>
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="zh-hant">繁中</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <div class="content-wrapper">
+            <h1 style="text-align: center; color: #333; margin-bottom: 20px;" data-i18n="pricing-hero-title">Subscription & Start 7-Day Free Trial</h1>
+            <div style="text-align: center; margin-bottom: 40px; padding: 15px; background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-radius: 10px; border-left: 4px solid #2196f3;">
+                <div style="font-size: 2.5em; margin-bottom: 10px;">🎉</div>
+                <p style="font-size: 1.1em; color: #1976d2; font-weight: bold; margin: 0;">Start your 7-day FREE trial today!</p>
+                <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Your subscription will automatically renew after 7 days. You can cancel anytime.</p>
+            </div>
+        
+        <!-- Plan Selection -->
+        <div class="row" style="margin-bottom: 40px;">
+            <div class="col-lg-5" style="margin-right: 5%;">
+                <div class="card plan-card plan-selected" data-plan="shared" onclick="selectPlan('shared')" style="cursor: pointer; position: relative;">
+                    <div style="position: absolute; top: -10px; right: -10px; background: #ff4757; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; z-index: 1;">🆓 7 Days FREE</div>
+                    <div style="padding: 30px; text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">🌐</div>
+                        <h3 data-i18n="shared-plan-name">Shared Nodes</h3>
+                        <p data-i18n="shared-plan-desc">Most cost-effective choice for daily browsing, streaming entertainment, and personal privacy protection.</p>
+                        <ul style="list-style: none; padding: 0; text-align: left; margin: 20px 0;">
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="shared-feature-1">Connect to all our shared servers</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="shared-feature-2">Share IP addresses with other users</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="shared-feature-3">Ultimate anonymity</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="shared-feature-4">All core security features</span></li>
+                        </ul>
+                        <div style="font-size: 2em; color: var(--primary-color); margin: 20px 0;">$2.99 <small>USD/month</small></div>
+                        <div style="color: #666; margin-bottom: 20px;">or $29.99 USD/year</div>
+                        <button type="button" onclick="selectPlan('shared')" style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1em; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);" data-i18n="shared-cta">
+                            <span>🚀</span> Start Free Trial
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card plan-card" data-plan="dedicated" onclick="selectPlan('dedicated')" style="position: relative; cursor: pointer;">
+                    <div style="position: absolute; top: -10px; right: -10px; background: #ff4757; color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; z-index: 1;">🆓 7 Days FREE</div>
+                    <div style="padding: 30px; text-align: center;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">⚡</div>
+                        <h3 data-i18n="dedicated-plan-name">Dedicated Line</h3>
+                        <p data-i18n="dedicated-plan-desc">Your personal VPN tunnel providing unmatched performance, stability, and fixed IP address.</p>
+                        <ul style="list-style: none; padding: 0; text-align: left; margin: 20px 0;">
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="dedicated-feature-1">Your exclusive VPN tunnel</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="dedicated-feature-2">Fixed dedicated IP address</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="dedicated-feature-3">Avoid IP blocking from others' actions</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="dedicated-feature-4">Best choice for remote work and access control systems</span></li>
+                            <li style="margin-bottom: 8px;">✓ <span data-i18n="dedicated-feature-5">Highest stability and performance</span></li>
+                        </ul>
+                        <div style="font-size: 2em; color: var(--primary-color); margin: 20px 0;">$9.99 <small>USD/month</small></div>
+                        <div style="color: #666; margin-bottom: 20px;">or $99.99 USD/year</div>
+                        <button type="button" onclick="selectPlan('dedicated')" style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1em; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);" data-i18n="dedicated-cta">
+                            <span>🚀</span> Start Free Trial
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Server Location Selection -->
+        <div class="card" id="locationSelection" style="margin-bottom: 30px;">
+            <div class="card-header">
+                <h4 style="margin: 0;" data-i18n="choose-location">Choose Server Location</h4>
+            </div>
+            <div style="padding: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                        <h6 data-i18n="region-americas" style="margin: 0 0 10px 0; font-size: 0.9em; color: #007bff;">🌎 Americas</h6>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="us-virginia"> United States (N. Virginia)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="us-ohio"> United States (Ohio)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="us-california"> United States (N. California)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="us-oregon"> United States (Oregon)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="canada-calgary"> Canada (Calgary)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="canada-central"> Canada (Central)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="mexico-central"> Mexico (Central)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="brazil-sao-paulo"> South America (São Paulo)</label>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                        <h6 data-i18n="region-asia" style="margin: 0 0 10px 0; font-size: 0.9em; color: #007bff;">🌏 Asia Pacific</h6>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="hong-kong"> Hong Kong</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="taipei"> Taipei</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="tokyo"> Tokyo</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="seoul"> Seoul</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="osaka"> Osaka</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="singapore"> Singapore</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="malaysia"> Malaysia</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="thailand"> Thailand</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="jakarta"> Jakarta</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="mumbai"> Mumbai</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="hyderabad"> Hyderabad</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="sydney"> Sydney</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="melbourne"> Melbourne</label>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                        <h6 data-i18n="region-europe" style="margin: 0 0 10px 0; font-size: 0.9em; color: #007bff;">🌍 Europe</h6>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="uk-london"> United Kingdom (London)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="ireland"> Ireland</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="france-paris"> France (Paris)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="germany-frankfurt"> Germany (Frankfurt)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="sweden-stockholm"> Sweden (Stockholm)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="italy-milan"> Italy (Milan)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="spain"> Spain</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="switzerland-zurich"> Switzerland (Zurich)</label>
+                        </div>
+                    </div>
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                        <h6 data-i18n="region-middle-africa" style="margin: 0 0 10px 0; font-size: 0.9em; color: #007bff;">🌍 Middle East & Africa</h6>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="israel-tel-aviv"> Israel (Tel Aviv)</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="uae"> UAE</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="bahrain"> Bahrain</label>
+                            <label style="font-size: 0.8em;"><input type="radio" name="location" value="south-africa-cape-town"> Africa (Cape Town)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Customer Information Form -->
+        <div class="card" id="customerForm">
+            <div class="card-header">
+                <h4 style="margin: 0;" data-i18n="customer-info">Customer Information</h4>
+            </div>
+            <div style="padding: 30px;">
+                <form id="orderForm">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px;" data-i18n="email-address">Email Address *</label>
+                        <input type="email" id="customerEmail" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px;" data-i18n="name">Name *</label>
+                        <input type="text" id="customerName" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    <div style="margin-bottom: 30px;">
+                        <h5 data-i18n="billing-frequency-title">Billing Frequency</h5>
+                        <div style="display: flex; gap: 20px; margin-top: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="billing" value="monthly" checked>
+                                <span data-i18n="monthly-billing">Monthly</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="radio" name="billing" value="yearly">
+                                <span data-i18n="yearly-billing">Yearly (Save 17%)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 30px;">
+                        <h5>Payment Method</h5>
+                        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" alt="PayPal" style="height: 25px;">
+                                <span style="margin-left: 10px; font-weight: bold;">Secure Setup via PayPal</span>
+                            </div>
+                            <p style="margin: 10px 0; color: #666; font-size: 0.9em;">You will be redirected to PayPal to complete your payment securely.</p>
+                            <label style="display: flex; align-items: flex-start; margin: 15px 0;">
+                                <input type="checkbox" id="agreement" required checked style="margin-right: 8px; margin-top: 2px;">
+                                <span style="font-size: 0.9em;">I agree to the <a href="./terms.html" target="_blank" style="color: #007bff; text-decoration: none;">Terms of Service</a> and authorize my 7-day free trial. Billing starts only after the trial ends, and I can cancel at any time.</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="button" onclick="processPayment()" style="background: #ffc439; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; color: #003087; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-bottom: 8px;">
+                            <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" alt="PayPal" style="height: 25px;">
+                            <span>Start My 7-Day Free Trial</span>
+                            <span style="font-size: 12px; color: #28a745; margin-left: 15px;">🔒 Secure</span>
+                        </button>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <p style="margin: 0; font-size: 0.85em; color: #666;">$0.00 Due Today</p>
+                            <p style="margin: 2px 0 0 0; font-size: 0.8em; color: #999;">Then <span id="finalPrice">$2.99</span>/<span id="billingPeriod">month</span>. You won't be charged today. Cancel anytime</p>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <p style="margin: 0; font-size: 0.9em; color: #666;">🛡️ No commitment. Cancel with one click in your dashboard.</p>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <strong style="color: #28a745;">30-Day Money Back Guarantee</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #666;">Not satisfied? Get a full refund within 30 days, no questions asked.</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+        
+        <!-- PayPal Form -->
+        <form id="paypalForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: none;">
+            <input type="hidden" name="cmd" value="_xclick">
+            <input type="hidden" name="business" value="paypal2017august@sunke.info">
+            <input type="hidden" name="item_name" id="paypal_item_name" value="MyWireGuard VPN Service">
+            <input type="hidden" name="amount" id="paypal_amount" value="2.99">
+            <input type="hidden" name="currency_code" value="USD">
+            <input type="hidden" name="return" value="https://mywireguard.com/success">
+            <input type="hidden" name="cancel_return" value="https://mywireguard.com/cancel">
+        </form>
+
+    </div>
+
+<footer>
+    <div class="container">
+        <p data-i18n="footer-copyright">Copyright © 2025 MyWireGuard.com. All Rights Reserved.</p>
+        <p>
+            <a href="./contact.html" data-i18n="footer-contact">Contact</a> |
+            <a href="./refund.html" data-i18n="footer-refund">Refund Policy</a> |
+            <a href="./terms.html" data-i18n="footer-terms">Terms of Service</a>
+        </p>
+    </div>
+</footer>
+
+    <script>
+        let selectedPlan = 'shared';
+        let selectedLocation = null;
+        let selectedBilling = 'monthly';
+        
+        const plans = {
+            shared: {
+                name: 'Shared Nodes',
+                monthly: 2.99,
+                yearly: 29.99
+            },
+            dedicated: {
+                name: 'Dedicated Line', 
+                monthly: 9.99,
+                yearly: 99.99
+            }
+        };
+        
+        function selectPlan(planType) {
+            selectedPlan = planType;
+            // Remove selected class from all plan cards
+            document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('plan-selected'));
+            // Add selected class to clicked plan
+            document.querySelector(`[data-plan="${planType}"]`).classList.add('plan-selected');
+            updatePrice();
+        }
+        
+        // Listen for location selection
+        document.addEventListener('change', function(e) {
+            if (e.target.name === 'location') {
+                selectedLocation = e.target.value;
+                updatePrice();
+            }
+            if (e.target.name === 'billing') {
+                selectedBilling = e.target.value;
+                updatePrice();
+            }
+        });
+        
+        function updatePrice() {
+            if (selectedPlan) {
+                const price = plans[selectedPlan][selectedBilling];
+                document.getElementById('finalPrice').textContent = '$' + price;
+                document.getElementById('billingPeriod').textContent = selectedBilling === 'yearly' ? 'year' : 'month';
+                document.getElementById('paypal_amount').value = price;
+                document.getElementById('paypal_item_name').value = `MyWireGuard - ${plans[selectedPlan].name} (${selectedBilling})`;
+            }
+        }
+        
+        function processPayment() {
+            const email = document.getElementById('customerEmail').value;
+            const name = document.getElementById('customerName').value;
+            const agreement = document.getElementById('agreement').checked;
+            
+            if (!email || !name || !selectedPlan || !selectedLocation || !agreement) {
+                alert('Please fill in all required fields, select a plan and location, and agree to the terms.');
+                return;
+            }
+            
+            const price = plans[selectedPlan][selectedBilling];
+            
+            // Show custom confirmation dialog
+            const confirmDialog = document.createElement('div');
+            confirmDialog.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 450px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📋</div>
+                        <h3 style="margin-top: 0; color: #333; font-size: 1.4em;">Please Confirm Your Subscription Details</h3>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left;">
+                            <p style="margin: 5px 0;"><strong>Customer:</strong> ${name}</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+                            <p style="margin: 5px 0;"><strong>Plan:</strong> ${plans[selectedPlan].name}</p>
+                            <p style="margin: 5px 0;"><strong>Location:</strong> ${selectedLocation}</p>
+                            <p style="margin: 5px 0;"><strong>Billing:</strong> ${selectedBilling}</p>
+                            <p style="margin: 5px 0;"><strong>Price:</strong> $${price}</p>
+                        </div>
+                        <p style="font-size: 0.9em; color: #666; margin: 15px 0;">Your subscription will automatically renew after 7 days. You can cancel anytime.</p>
+                        <div style="margin-top: 25px;">
+                            <button onclick="confirmOrder()" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 12px 25px; border-radius: 25px; margin-right: 15px; cursor: pointer; font-weight: bold; font-size: 1em; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);">
+                                <span style="font-size: 1.2em;">🚀</span>
+                                Confirm Subscription & Start 7-Day Free Trial
+                            </button>
+                            <br><br>
+                            <button onclick="cancelOrder()" style="background: #f8f9fa; color: #666; border: 1px solid #ddd; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9em;">
+                                ❌ Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmDialog);
+            
+            window.confirmOrder = function() {
+                document.body.removeChild(confirmDialog);
+                
+                // Send notification
+                const orderData = {
+                    customer: name,
+                    email: email,
+                    plan: plans[selectedPlan].name,
+                    location: selectedLocation,
+                    billing: selectedBilling,
+                    price: `$${price}`,
+                    timestamp: new Date().toISOString()
+                };
+                
+                fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': 'Basic MDk3YnVsdWxiZGpmbTk2OXhybXJpaml6NDM6c3c1MDFsdW1ib2w4ajNrYm1jMzJtdWd2aHNtdDBkd2NtaDQ3dDc3YXZ3enBvd3BiMTFjNXltdW1qeA=='
+                    },
+                    body: JSON.stringify({
+                        type: 'awsdo_com_notification',
+                        to: {
+                            id: 'snaagk@gmail.com',
+                            email: 'snaagk@gmail.com'
+                        },
+                        parameters: {
+                            comment: `New MyWireGuard Order:\n\nCustomer: ${orderData.customer}\nEmail: ${orderData.email}\nPlan: ${orderData.plan}\nLocation: ${orderData.location}\nBilling: ${orderData.billing}\nPrice: ${orderData.price}\nTime: ${orderData.timestamp}`
+                        },
+                        templateId: 'awsdo_com'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Notification sent:', data);
+                    
+                    // Open PayPal in new window
+                    const paypalUrl = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=paypal2017august@sunke.info&item_name=${encodeURIComponent('MyWireGuard - ' + plans[selectedPlan].name + ' (' + selectedBilling + ')')}&amount=${price}&currency_code=USD&return=https://mywireguard.com/success&cancel_return=https://mywireguard.com/cancel`;
+                    window.location.href = paypalUrl;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error processing order. Please try again.');
+                });
+            };
+            
+            window.cancelOrder = function() {
+                document.body.removeChild(confirmDialog);
+            };
+        }
+    </script>
+    
+    <!-- Chatwoot SDK -->
+    <script>
+      (function(d,t) {
+        var BASE_URL="https://app.chatwoot.com";
+        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=BASE_URL+"/packs/js/sdk.js";
+        g.async = true;
+        s.parentNode.insertBefore(g,s);
+        g.onload=function(){
+          window.chatwootSDK.run({
+            websiteToken: 'UHLFhmfNBGbWWaV4vt431TuN',
+            baseUrl: BASE_URL
+          })
+        }
+      })(document,"script");
+    </script>
+    <script src="./language.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"379e1acbbbdc4526a8f7dd768e8581db","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

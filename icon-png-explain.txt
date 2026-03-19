@@ -1,0 +1,30 @@
+搜索
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -189px -184px; width: 118px; height: 119px; }
+家
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -340px -184px; width: 132px; height: 110px; }
+齿轮
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -509px -183px; width: 138px; height: 114px; }
+对话
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -678px -195px; width: 133px; height: 101px; }
+爱心
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -840px -186px; width: 126px; height: 106px; }
+购物车
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -996px -190px; width: 131px; height: 106px; }
+电子邮箱
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -1166px -191px; width: 137px; height: 101px; }
+无脸人的头像
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -190px -337px; width: 116px; height: 127px; }
+蓝色地球
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -343px -338px; width: 130px; height: 128px; }
+
+
+电子邮箱已打开
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -508px -339px; width: 141px; height: 117px; }
+黄色的锁
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -686px -336px; width: 109px; height: 120px; }
+黑色的锁
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -842px -336px; width: 114px; height: 120px; }
+统计图-数据升高
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -986px -341px; width: 145px; height: 115px; }
+电脑
+.sprite { background: url('imgs/Copilot_20260319_071622.png') no-repeat -1158px -357px; width: 155px; height: 96px; }

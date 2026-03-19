@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="How to use WireGuard .conf configuration file - step by step tutorial for all platforms.">
+    <title>Tutorial - GetWireGuard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/templatemo-topic-listing.css" rel="stylesheet">
+    <link href="css/sprites.css" rel="stylesheet">
+    <style>
+        .step-num { width: 36px; height: 36px; border-radius: 50%; background: #f9a826; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .step-row { display: flex; gap: 16px; margin-bottom: 28px; align-items: flex-start; }
+        .code-block { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 16px; font-family: monospace; font-size: .9rem; overflow-x: auto; }
+        .platform-tab-content { padding-top: 24px; }
+    </style>
+</head>
+<body class="topics-listing-page" id="top">
+<main>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand p-0" href="index.html">
+            <span class="logo-wrap"><span class="logo-sprite"></span></span>
+        </a>
+        <div class="d-lg-none ms-auto me-4"><a href="pricing.html" class="btn custom-btn btn-sm">Get Started</a></div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-lg-5 me-lg-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
+                <li class="nav-item"><a class="nav-link" href="download.html">Download</a></li>
+                <li class="nav-item"><a class="nav-link active" href="tutorial.html">Tutorial</a></li>
+                <li class="nav-item"><a class="nav-link" href="faq.html">FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="faq.html#contact">Contact</a></li>
+            </ul>
+            <div class="d-none d-lg-block"><a href="pricing.html" class="btn custom-btn">Start Free Trial</a></div>
+        </div>
+    </div>
+</nav>
+
+<header class="site-header d-flex flex-column justify-content-center align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item active">Tutorial</li>
+                    </ol>
+                </nav>
+                <h2 class="text-white">How to Use WireGuard</h2>
+                <p class="text-white">Import your .conf file and connect in under 2 minutes.</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section-padding section-bg">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4>Step 1 — Subscribe &amp; Receive Your Config File</h4>
+                <p>After completing your order on the <a href="pricing.html">Pricing page</a>, you will receive an email containing:</p>
+                <ul>
+                    <li>A <strong>.conf</strong> configuration file attachment</li>
+                    <li>A <strong>QR code</strong> image (for mobile devices)</li>
+                    <li>Your chosen server location and plan details</li>
+                </ul>
+                <p>The .conf file looks like this:</p>
+                <div class="code-block">
+[Interface]<br>
+PrivateKey = &lt;your-private-key&gt;<br>
+Address = 10.0.0.2/32<br>
+DNS = 1.1.1.1<br>
+<br>
+[Peer]<br>
+PublicKey = &lt;server-public-key&gt;<br>
+Endpoint = &lt;server-ip&gt;:51820<br>
+AllowedIPs = 0.0.0.0/0, ::/0<br>
+PersistentKeepalive = 25
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <h4 class="mb-4">Step 2 — Install WireGuard &amp; Import Config</h4>
+
+        <ul class="nav nav-tabs mb-0" id="platformTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-windows" type="button"><i class="bi-windows me-1"></i>Windows</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-mac" type="button"><i class="bi-apple me-1"></i>macOS</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-ios" type="button"><i class="bi-phone me-1"></i>iOS</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-android" type="button"><i class="bi-android2 me-1"></i>Android</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-linux" type="button"><i class="bi-terminal me-1"></i>Linux</button>
+            </li>
+        </ul>
+
+        <div class="tab-content platform-tab-content">
+
+            <!-- Windows -->
+            <div class="tab-pane fade show active" id="tab-windows">
+                <div class="step-row"><div class="step-num">1</div><div>Download and install WireGuard from <a href="https://download.wireguard.com/windows-client/wireguard-installer.exe" target="_blank">wireguard.com</a>.</div></div>
+                <div class="step-row"><div class="step-num">2</div><div>Open WireGuard. Click <strong>"Add Tunnel"</strong> → <strong>"Import tunnel(s) from file"</strong>.</div></div>
+                <div class="step-row"><div class="step-num">3</div><div>Browse to the <code>.conf</code> file you received by email and select it.</div></div>
+                <div class="step-row"><div class="step-num">4</div><div>The tunnel appears in the list. Click <strong>"Activate"</strong> to connect.</div></div>
+                <div class="step-row"><div class="step-num">5</div><div>The status changes to <strong style="color:green;">Active</strong>. You are now connected and protected.</div></div>
+            </div>
+
+            <!-- macOS -->
+            <div class="tab-pane fade" id="tab-mac">
+                <div class="step-row"><div class="step-num">1</div><div>Install WireGuard from the <a href="https://apps.apple.com/us/app/wireguard/id1451685025" target="_blank">Mac App Store</a>.</div></div>
+                <div class="step-row"><div class="step-num">2</div><div>Open WireGuard. Click the <strong>"+"</strong> button → <strong>"Import tunnel(s) from file"</strong>.</div></div>
+                <div class="step-row"><div class="step-num">3</div><div>Select the <code>.conf</code> file from your Downloads folder.</div></div>
+                <div class="step-row"><div class="step-num">4</div><div>Allow the VPN configuration when macOS prompts you.</div></div>
+                <div class="step-row"><div class="step-num">5</div><div>Toggle the tunnel <strong>ON</strong>. You're connected.</div></div>
+            </div>
+
+            <!-- iOS -->
+            <div class="tab-pane fade" id="tab-ios">
+                <div class="step-row"><div class="step-num">1</div><div>Install WireGuard from the <a href="https://apps.apple.com/us/app/wireguard/id1441195209" target="_blank">App Store</a>.</div></div>
+                <div class="step-row"><div class="step-num">2</div><div>Open the email on your iPhone. Tap the <code>.conf</code> attachment or open the QR code image.</div></div>
+                <div class="step-row"><div class="step-num">3</div><div><strong>Option A (QR Code):</strong> In WireGuard tap <strong>"+"</strong> → <strong>"Create from QR code"</strong> and scan the QR code.</div></div>
+                <div class="step-row"><div class="step-num">4</div><div><strong>Option B (File):</strong> Tap the <code>.conf</code> file → Share → WireGuard to import directly.</div></div>
+                <div class="step-row"><div class="step-num">5</div><div>Allow the VPN configuration. Toggle the tunnel <strong>ON</strong>.</div></div>
+            </div>
+
+            <!-- Android -->
+            <div class="tab-pane fade" id="tab-android">
+                <div class="step-row"><div class="step-num">1</div><div>Install WireGuard from <a href="https://play.google.com/store/apps/details?id=com.wireguard.android" target="_blank">Google Play</a>.</div></div>
+                <div class="step-row"><div class="step-num">2</div><div>Open WireGuard. Tap the <strong>"+"</strong> button.</div></div>
+                <div class="step-row"><div class="step-num">3</div><div><strong>Option A (QR Code):</strong> Tap <strong>"Scan from QR code"</strong> and scan the QR code from your email.</div></div>
+                <div class="step-row"><div class="step-num">4</div><div><strong>Option B (File):</strong> Tap <strong>"Import from file or archive"</strong> and select the <code>.conf</code> file.</div></div>
+                <div class="step-row"><div class="step-num">5</div><div>Allow the VPN permission. Toggle the tunnel <strong>ON</strong>.</div></div>
+            </div>
+
+            <!-- Linux -->
+            <div class="tab-pane fade" id="tab-linux">
+                <div class="step-row"><div class="step-num">1</div><div>Install WireGuard via your package manager:</div></div>
+                <div class="code-block mb-3">
+# Ubuntu / Debian<br>
+sudo apt install wireguard<br><br>
+# Fedora<br>
+sudo dnf install wireguard-tools<br><br>
+# Arch Linux<br>
+sudo pacman -S wireguard-tools
+                </div>
+                <div class="step-row"><div class="step-num">2</div><div>Copy the <code>.conf</code> file to <code>/etc/wireguard/</code>:</div></div>
+                <div class="code-block mb-3">sudo cp ~/Downloads/wg0.conf /etc/wireguard/wg0.conf<br>sudo chmod 600 /etc/wireguard/wg0.conf</div>
+                <div class="step-row"><div class="step-num">3</div><div>Start the tunnel:</div></div>
+                <div class="code-block mb-3">sudo wg-quick up wg0</div>
+                <div class="step-row"><div class="step-num">4</div><div>To auto-start on boot:</div></div>
+                <div class="code-block mb-3">sudo systemctl enable wg-quick@wg0</div>
+                <div class="step-row"><div class="step-num">5</div><div>To disconnect: <code>sudo wg-quick down wg0</code></div></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="timeline-section section-padding">
+    <div class="section-overlay"></div>
+    <div class="container text-center">
+        <div class="sp-box mb-3" style="width:60px;height:50px;display:inline-block;overflow:hidden;">
+            <span class="sprite icon-home" style="transform:scale(0.45);transform-origin:top left;"></span>
+        </div>
+        <h4 class="text-white mb-3">Still need help?</h4>
+        <p class="text-white mb-4">Our support team is ready to assist you with setup on any device.</p>
+        <a href="faq.html#contact" class="btn custom-btn custom-border-btn me-3">Contact Support</a>
+        <a href="faq.html" class="btn custom-border-btn">View FAQ</a>
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer section-padding">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-12 mb-4 pb-2">
+                <a class="navbar-brand mb-2 p-0" href="index.html">
+                    <span class="logo-wrap-sm"><span class="logo-sprite"></span></span>
+                </a>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Product</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="pricing.html" class="site-footer-link">Pricing</a></li>
+                    <li class="site-footer-link-item"><a href="download.html" class="site-footer-link">Download</a></li>
+                    <li class="site-footer-link-item"><a href="tutorial.html" class="site-footer-link">Tutorial</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Support</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="faq.html" class="site-footer-link">FAQ</a></li>
+                    <li class="site-footer-link-item"><a href="faq.html#contact" class="site-footer-link">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <h6 class="site-footer-title mb-3">Legal</h6>
+                <ul class="site-footer-links">
+                    <li class="site-footer-link-item"><a href="refund-policy.html" class="site-footer-link">Refund Policy</a></li>
+                    <li class="site-footer-link-item"><a href="terms.html" class="site-footer-link">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4 col-12 mt-4 mt-lg-0 ms-auto">
+                <p class="copyright-text mt-3">Copyright © 2025 GetWireGuard.com<br>All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/jquery.sticky.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+/* ===== Logo ===== */
+.logo-sprite {
+    background: url('../imgs/getwireguard-logo.png') no-repeat -197px -273px;
+    width: 737px;
+    height: 196px;
+    display: inline-block;
+    transform: scale(0.18);
+    transform-origin: top left;
+    flex-shrink: 0;
+}
+/* wrapper: 737*0.18=133px, 196*0.18=36px */
+.logo-wrap {
+    display: inline-block;
+    width: 133px;
+    height: 36px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+/* footer: 737*0.15=111px, 196*0.15=30px */
+.logo-wrap-sm {
+    display: inline-block;
+    width: 111px;
+    height: 30px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+.logo-wrap-sm .logo-sprite {
+    transform: scale(0.15);
+    transform-origin: top left;
+}
+
+/* ===== Sprite Icon Base ===== */
+.sprite {
+    background-image: url('../imgs/Copilot_20260319_071622.png');
+    background-repeat: no-repeat;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* Scale wrapper — renders sprite at half size for clean display */
+.sprite-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.sprite-wrap .sprite {
+    transform: scale(0.45);
+    transform-origin: top left;
+}
+
+/* Individual icons */
+.icon-search   { background-position: -189px -184px; width: 118px; height: 119px; }
+.icon-home     { background-position: -340px -184px; width: 132px; height: 110px; }
+.icon-gear     { background-position: -509px -183px; width: 138px; height: 114px; }
+.icon-chat     { background-position: -678px -195px; width: 133px; height: 101px; }
+.icon-heart    { background-position: -840px -186px; width: 126px; height: 106px; }
+.icon-cart     { background-position: -996px -190px; width: 131px; height: 106px; }
+.icon-email    { background-position: -1166px -191px; width: 137px; height: 101px; }
+.icon-avatar   { background-position: -190px -337px;  width: 116px; height: 127px; }
+.icon-globe    { background-position: -343px -338px;  width: 130px; height: 128px; }
+.icon-email-open { background-position: -508px -339px; width: 141px; height: 117px; }
+.icon-lock-yellow { background-position: -686px -336px; width: 109px; height: 120px; }
+.icon-lock-black  { background-position: -842px -336px; width: 114px; height: 120px; }
+.icon-chart    { background-position: -986px -341px;  width: 145px; height: 115px; }
+.icon-computer { background-position: -1158px -357px; width: 155px; height: 96px; }
+
+/* Convenience sizes */
+.sprite-sm  { transform: scale(0.35); transform-origin: top left; }
+.sprite-md  { transform: scale(0.45); transform-origin: top left; }
+.sprite-lg  { transform: scale(0.60); transform-origin: top left; }
