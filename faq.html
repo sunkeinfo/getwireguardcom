@@ -275,8 +275,45 @@
 <script>
 function submitContact(e) {
     e.preventDefault();
-    alert('Thank you! Your message has been sent. We will reply to ' + document.getElementById('cemail').value + ' within 2 hours.');
-    e.target.reset();
+    var name    = document.getElementById('cname').value.trim();
+    var email   = document.getElementById('cemail').value.trim();
+    var subject = document.getElementById('csubject').value;
+    var message = document.getElementById('cmessage').value.trim();
+
+    var btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Basic MDk3YnVsdWxiZGpmbTk2OXhybXJpaml6NDM6c3c1MDFsdW1ib2w4ajNrYm1jMzJtdWd2aHNtdDBkd2NtaDQ3dDc3YXZ3enBvd3BiMTFjNXltdW1qeA=='
+        },
+        body: JSON.stringify({
+            type: 'awsdo_com_notification',
+            to: { id: 'snaagk@gmail.com', email: 'snaagk@gmail.com' },
+            parameters: {
+                comment: 'GetWireGuard Contact Form:\n\nName: ' + name + '\nEmail: ' + email + '\nSubject: ' + subject + '\nMessage: ' + message + '\nTime: ' + new Date().toISOString()
+            },
+            templateId: 'awsdo_com'
+        })
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+        console.log('Notification sent:', data);
+        alert('Thank you ' + name + '! Your message has been sent. We will reply to ' + email + ' within 2 hours.');
+        e.target.reset();
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
+    })
+    .catch(function(err) {
+        console.error('Notification error:', err);
+        alert('Sorry, there was an error sending your message. Please email us directly at support@getwireguard.com');
+        btn.disabled = false;
+        btn.textContent = 'Send Message';
+    });
 }
 </script>
 </body>
