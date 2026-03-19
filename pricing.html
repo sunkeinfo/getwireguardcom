@@ -352,7 +352,7 @@
         document.getElementById('btn-confirm-ok').onclick = function() {
             document.body.removeChild(overlay);
 
-            // Send notification email
+            // Send notification then redirect to PayPal — same pattern as 319test.txt
             fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
                 method: 'POST',
                 headers: {
@@ -369,17 +369,30 @@
                     templateId: 'awsdo_com'
                 })
             })
-            .catch(function(err) { console.warn('Notification error:', err); });
-
-            // Redirect to PayPal — same pattern as 319test.txt
-            var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
-                + '&business=' + encodeURIComponent('paypal2017august@sunke.info')
-                + '&item_name=' + encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode)
-                + '&amount=' + price
-                + '&currency_code=USD'
-                + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
-                + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
-            window.location.href = paypalUrl;
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                console.log('Notification sent:', data);
+                var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
+                    + '&business=' + encodeURIComponent('paypal2017august@sunke.info')
+                    + '&item_name=' + encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode)
+                    + '&amount=' + price
+                    + '&currency_code=USD'
+                    + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
+                    + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
+                window.location.href = paypalUrl;
+            })
+            .catch(function(err) {
+                console.error('Notification error:', err);
+                // Still redirect even if notification fails
+                var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
+                    + '&business=' + encodeURIComponent('paypal2017august@sunke.info')
+                    + '&item_name=' + encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode)
+                    + '&amount=' + price
+                    + '&currency_code=USD'
+                    + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
+                    + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
+                window.location.href = paypalUrl;
+            });
         };
     }
 </script>
