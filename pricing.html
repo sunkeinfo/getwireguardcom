@@ -263,8 +263,11 @@
 <script src="js/custom.js"></script>
 <script>
     var selectedPlan = null, selectedNode = null, billing = 'monthly';
-    var priceNums = { shared: { monthly: '2.99', yearly: '29.99' }, dedicated: { monthly: '9.99', yearly: '99.99' } };
-    var prices = { shared: { monthly: '$2.99/month', yearly: '$29.99/year' }, dedicated: { monthly: '$9.99/month', yearly: '$99.99/year' } };
+
+    var plans = {
+        shared:    { name: 'Shared Nodes',  monthly: 2.99,  yearly: 29.99 },
+        dedicated: { name: 'Dedicated Line', monthly: 9.99, yearly: 99.99 }
+    };
 
     function setBilling(b) {
         billing = b;
@@ -296,14 +299,14 @@
 
     function updateSummary() {
         if (selectedPlan) {
-            document.getElementById('sum-price').textContent = prices[selectedPlan][billing];
+            var p = plans[selectedPlan][billing];
+            document.getElementById('sum-price').textContent = '$' + p + '/' + (billing === 'monthly' ? 'month' : 'year');
         }
         var email = (document.getElementById('customerEmail').value || '').trim();
         var name  = (document.getElementById('customerName').value || '').trim();
         document.getElementById('btn-order').disabled = !(selectedPlan && selectedNode && email && name);
     }
 
-    // Re-check button when user types name/email
     document.getElementById('customerEmail').addEventListener('input', updateSummary);
     document.getElementById('customerName').addEventListener('input', updateSummary);
 
@@ -318,10 +321,9 @@
             return;
         }
 
-        var price = prices[selectedPlan][billing];
-        var planLabel = selectedPlan === 'shared' ? 'Shared Nodes' : 'Dedicated Line';
+        var price = plans[selectedPlan][billing];
+        var planLabel = plans[selectedPlan].name;
 
-        // Build confirmation overlay
         var overlay = document.createElement('div');
         overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;';
         overlay.innerHTML = `
@@ -334,7 +336,7 @@
                     <div><strong>Plan:</strong> ${planLabel}</div>
                     <div><strong>Location:</strong> ${selectedNode}</div>
                     <div><strong>Billing:</strong> ${billing === 'monthly' ? 'Monthly' : 'Yearly'}</div>
-                    <div><strong>Price:</strong> ${price} USD / ${billing === 'monthly' ? 'month' : 'year'}</div>
+                    <div><strong>Price:</strong> $${price} / ${billing === 'monthly' ? 'month' : 'year'}</div>
                 </div>
                 <p style="font-size:.85rem;color:#888;margin-bottom:22px;">First 7 days FREE. Subscription auto-renews after trial. Cancel anytime.</p>
                 <button id="btn-confirm-ok" style="background:linear-gradient(135deg,#28a745,#20c997);color:#fff;border:none;padding:12px 24px;border-radius:25px;font-weight:700;font-size:1rem;cursor:pointer;width:100%;margin-bottom:10px;">🎉 Start My Free Trial — $0.00 Today</button>
@@ -369,13 +371,11 @@
             })
             .catch(function(err) { console.warn('Notification error:', err); });
 
-            // Redirect to PayPal
-            var amountNum = priceNums[selectedPlan][billing];
-            var itemName = encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode);
+            // Redirect to PayPal — same pattern as 319test.txt
             var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
-                + '&business=paypal2017august@sunke.info'
-                + '&item_name=' + itemName
-                + '&amount=' + amountNum
+                + '&business=' + encodeURIComponent('paypal2017august@sunke.info')
+                + '&item_name=' + encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode)
+                + '&amount=' + price
                 + '&currency_code=USD'
                 + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
                 + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
