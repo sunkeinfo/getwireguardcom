@@ -263,6 +263,7 @@
 <script src="js/custom.js"></script>
 <script>
     var selectedPlan = null, selectedNode = null, billing = 'monthly';
+    var priceNums = { shared: { monthly: '2.99', yearly: '29.99' }, dedicated: { monthly: '9.99', yearly: '99.99' } };
     var prices = { shared: { monthly: '$2.99/month', yearly: '$29.99/year' }, dedicated: { monthly: '$9.99/month', yearly: '$99.99/year' } };
 
     function setBilling(b) {
@@ -369,11 +370,12 @@
             .catch(function(err) { console.warn('Notification error:', err); });
 
             // Redirect to PayPal
+            var amountNum = priceNums[selectedPlan][billing];
             var itemName = encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode);
             var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
                 + '&business=paypal2017august@sunke.info'
                 + '&item_name=' + itemName
-                + '&amount=' + price
+                + '&amount=' + amountNum
                 + '&currency_code=USD'
                 + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
                 + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
