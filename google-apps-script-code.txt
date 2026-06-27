@@ -1,0 +1,214 @@
+// ======================================================
+//  Google Apps Script 完整代码
+//  用途：接收 pricing.html 表单数据，写入 Google Sheets
+//
+//  ★★★ 调试步骤：
+//  第一步：先运行 sendTestEmail，确认 GmailApp 能正常发邮件
+//  第二步：运行 debugSheet，查看日志确认表格数据和状态列是否正确
+//  第三步：以上两步都正常后，再运行 scanAndSendEmails
+//
+//  注意：如果你的 Sheet 标签页名称是中文"工作表1"，
+//        请把下面 SHEET_NAME 改为 '工作表1'
+// ======================================================
+
+var SHEET_NAME = '工作表1';
+var HEADERS = ['Time', 'Username', 'Email', 'Plan', 'Location', 'Billing', 'Price', 'Status'];
+
+// ── 第一步：测试 GmailApp 是否能发邮件（发到你自己的 Gmail 账号）──
+// 运行后检查你的 Gmail 收件箱
+function sendTestEmail() {
+  var myEmail = Session.getActiveUser().getEmail();
+  GmailApp.sendEmail(
+    myEmail,
+    'GAS Test - GetWireGuard Script is Working',
+    'This is a test email from Google Apps Script. GmailApp is working correctly.',
+    { name: 'GetWireGuard Test' }
+  );
+  Logger.log('Test email sent to: ' + myEmail);
+}
+
+// ── 第二步：检查表格数据 ──
+// 运行后查看执行日志，确认每行的 email 和 status 值
+function debugSheet() {
+  Logger.log('=== debugSheet START ===');
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log('Spreadsheet: ' + ss.getName());
+
+  var sheets = ss.getSheets();
+  for (var s = 0; s < sheets.length; s++) {
+    Logger.log('Sheet[' + s + ']: ' + sheets[s].getName());
+  }
+
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    Logger.log('ERROR: Sheet "' + SHEET_NAME + '" not found!');
+    return;
+  }
+
+  var lastRow = sheet.getLastRow();
+  Logger.log('lastRow=' + lastRow);
+
+  if (lastRow < 2) {
+    Logger.log('No data rows.');
+    return;
+  }
+
+  var data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  for (var i = 0; i < data.length; i++) {
+    var email  = data[i][2].toString();
+    var status = data[i][7].toString();
+    Logger.log('Row ' + (i+2) + ': email=[' + email + '] status=[' + status + '] statusLen=' + status.length);
+  }
+  Logger.log('=== debugSheet END ===');
+}
+
+// ── 接收前端 POST 请求，将订单数据写入 Google Sheets ──
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(SHEET_NAME);
+    }
+    if (sheet.getLastRow() == 0) {
+      sheet.appendRow(HEADERS);
+    }
+    var params    = e.parameter;
+    var username  = params.username || '';
+    var email     = params.email    || '';
+    var plan      = params.plan     || '';
+    var location  = params.location || '';
+    var billing   = params.billing  || '';
+    var price     = params.price    || '';
+    var timestamp = new Date();
+    var status    = '未沟通';
+    sheet.appendRow([timestamp, username, email, plan, location, billing, price, status]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success', message: 'Order recorded' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ── 定时任务：扫描"未沟通"行，发送欢迎邮件，成功后改为"已沟通" ──
+function scanAndSendEmails() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  var data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+
+  for (var i = 0; i < data.length; i++) {
+    var row      = data[i];
+    var username = row[1].toString().trim();
+    var email    = row[2].toString().trim();
+    var plan     = row[3].toString().trim();
+    var location = row[4].toString().trim();
+    var billing  = row[5].toString().trim();
+    var price    = row[6].toString().trim();
+    var status   = row[7].toString().trim();
+
+    // status 为空（手动填入的数据没有初始状态）或为"未沟通"时都处理
+    if (status != '未沟通' && status != '') continue;
+    if (!email) continue;
+
+    try {
+      var subject = 'Update on your WireGuard Free Trial & Setup Instructions';
+      var htmlBody = ''
+        + '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+        + '<body style="margin:0;padding:0;background:#f0f4f8;font-family:Arial,Helvetica,sans-serif;">'
+        + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">'
+        + '<tr><td align="center">'
+        + '<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">'
+
+        // ── Header ──
+        + '<tr><td style="background:linear-gradient(135deg,#1a6b3c 0%,#2d9e5f 100%);padding:36px 40px;text-align:center;">'
+        + '<h1 style="margin:0;color:#ffffff;font-size:1.8rem;font-weight:700;letter-spacing:1px;">MyWireGuard</h1>'
+        + '<p style="margin:8px 0 0;color:#b7f5d4;font-size:0.95rem;letter-spacing:0.5px;">Secure. Private. Reliable.</p>'
+        + '</td></tr>'
+
+        // ── Greeting ──
+        + '<tr><td style="padding:36px 40px 0;">'
+        + '<h2 style="margin:0 0 12px;color:#1a6b3c;font-size:1.2rem;border-bottom:2px solid #e0f2e9;padding-bottom:10px;">Update on your WireGuard Free Trial &amp; Setup Instructions</h2>'
+        + '<p style="margin:16px 0 10px;color:#444;font-size:0.97rem;line-height:1.7;">Hi <strong>' + username + '</strong>,</p>'
+        + '<p style="margin:0 0 24px;color:#444;font-size:0.97rem;line-height:1.7;">Thank you for choosing <strong>MyWireGuard</strong>! We have successfully received your subscription details:</p>'
+        + '</td></tr>'
+
+        // ── Order Table ──
+        + '<tr><td style="padding:0 40px 28px;">'
+        + '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e0e7ef;">'
+        + '<tr style="background:#1a6b3c;">'
+        + '<th style="padding:11px 14px;color:#fff;font-size:0.85rem;font-weight:600;text-align:left;">Plan</th>'
+        + '<th style="padding:11px 14px;color:#fff;font-size:0.85rem;font-weight:600;text-align:left;">Location</th>'
+        + '<th style="padding:11px 14px;color:#fff;font-size:0.85rem;font-weight:600;text-align:left;">Billing</th>'
+        + '<th style="padding:11px 14px;color:#fff;font-size:0.85rem;font-weight:600;text-align:left;">Price after trial</th>'
+        + '</tr>'
+        + '<tr style="background:#f8fffe;">'
+        + '<td style="padding:12px 14px;color:#333;font-size:0.93rem;border-top:1px solid #e0e7ef;">' + plan + '</td>'
+        + '<td style="padding:12px 14px;color:#333;font-size:0.93rem;border-top:1px solid #e0e7ef;">' + location + '</td>'
+        + '<td style="padding:12px 14px;color:#333;font-size:0.93rem;border-top:1px solid #e0e7ef;">' + billing + '</td>'
+        + '<td style="padding:12px 14px;color:#1a6b3c;font-size:0.93rem;font-weight:700;border-top:1px solid #e0e7ef;">' + price + '</td>'
+        + '</tr>'
+        + '</table>'
+        + '</td></tr>'
+
+        // ── PayPal Section ──
+        + '<tr><td style="padding:0 40px 24px;">'
+        + '<div style="background:#fff8e1;border-left:4px solid #f9a826;padding:18px 20px;">'
+        + '<p style="margin:0 0 8px;font-size:1rem;font-weight:700;color:#b8860b;">[ PayPal Verification Status ]</p>'
+        + '<p style="margin:0 0 10px;color:#555;font-size:0.93rem;line-height:1.7;"><strong>If you have completed your PayPal verification:</strong> Your application is being processed, and your custom configuration file will arrive in your inbox shortly.</p>'
+        + '<p style="margin:0;color:#555;font-size:0.93rem;line-height:1.7;"><strong>If you have not completed PayPal verification yet:</strong> Please return to our website to complete the PayPal subscription. This is a crucial step that helps us verify real users and prevent service abuse.</p>'
+        + '</div>'
+        + '</td></tr>'
+
+        // ── Bonus Section ──
+        + '<tr><td style="padding:0 40px 24px;">'
+        + '<div style="background:#f0fdf4;border:1.5px solid #6ee7b7;padding:22px 24px;">'
+        + '<p style="margin:0 0 10px;font-size:1rem;font-weight:700;color:#1a6b3c;">[ Exclusive New Customer Bonus! ]</p>'
+        + '<p style="margin:0 0 14px;color:#444;font-size:0.93rem;line-height:1.7;">To welcome you on board, we have instantly allocated an extra WireGuard configuration file and node to your account. This node is shared with our website community, and you can start using it right now!</p>'
+        + '<p style="margin:0 0 14px;color:#444;font-size:0.93rem;"><strong>Download Your Bonus Config File:</strong></p>'
+        + '<p style="margin:0 0 14px;text-align:center;">'
+        + '<a href="https://getwireguard.com/download.html" style="display:inline-block;background:#1a6b3c;color:#fff;text-decoration:none;padding:13px 32px;font-weight:700;font-size:0.95rem;letter-spacing:0.5px;">Click Here to Download Your File</a>'
+        + '</p>'
+        + '<p style="margin:0 0 10px;color:#444;font-size:0.93rem;line-height:1.7;"><strong>Supported Devices:</strong> You can import this file into any official WireGuard client. It works seamlessly across iOS, Android, Windows, macOS, and Linux.</p>'
+        + '<p style="margin:0;background:#fffbeb;padding:10px 14px;color:#92400e;font-size:0.88rem;line-height:1.6;border-left:3px solid #f59e0b;"><strong>Please Note:</strong> As this is part of our shared free service, we cannot guarantee how long this specific temporary node will remain active. However, it is currently live and fully functional.</p>'
+        + '</div>'
+        + '</td></tr>'
+
+        // ── Dedicated Plan CTA ──
+        + '<tr><td style="padding:0 40px 28px;">'
+        + '<p style="margin:0;color:#555;font-size:0.93rem;line-height:1.7;">If you require <strong>dedicated nodes</strong> in specific countries or regions, please return to our website to apply for your preferred custom plan.</p>'
+        + '</td></tr>'
+
+        // ── Footer ──
+        + '<tr><td style="background:#f8fffe;border-top:2px solid #1a6b3c;padding:24px 40px;text-align:center;">'
+        + '<p style="margin:0 0 6px;color:#555;font-size:0.93rem;">If you have any questions, feel free to reply to this email at <a href="mailto:info@mywireguard.com" style="color:#1a6b3c;font-weight:600;">info@mywireguard.com</a>.</p>'
+        + '<p style="margin:16px 0 4px;color:#333;font-weight:700;font-size:0.95rem;">Best regards,</p>'
+        + '<p style="margin:0 0 2px;color:#1a6b3c;font-weight:700;font-size:1rem;">The MyWireGuard Team</p>'
+        + '<p style="margin:0;color:#888;font-size:0.85rem;">info@mywireguard.com</p>'
+        + '<p style="margin:16px 0 0;color:#bbb;font-size:0.78rem;">&copy; 2025 MyWireGuard.com &middot; All rights reserved</p>'
+        + '</td></tr>'
+
+        + '</table>'
+        + '</td></tr>'
+        + '</table>'
+        + '</body></html>';
+
+      GmailApp.sendEmail(
+        email,
+        subject,
+        'Welcome to GetWireGuard! Your free trial is ready.',
+        { htmlBody: htmlBody, from: 'info@mywireguard.com', name: 'GetWireGuard' }
+      );
+
+      sheet.getRange(i + 2, 8).setValue('已沟通');
+
+    } catch (err) {
+      Logger.log('Row ' + (i + 2) + ' FAILED: ' + err.toString());
+    }
+  }
+}

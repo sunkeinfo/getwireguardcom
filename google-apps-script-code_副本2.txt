@@ -1,0 +1,149 @@
+// ======================================================
+//  Google Apps Script 完整代码
+//  用途：接收 pricing.html 表单数据，写入 Google Sheets
+//
+//  ★★★ 调试步骤：
+//  第一步：先运行 sendTestEmail，确认 GmailApp 能正常发邮件
+//  第二步：运行 debugSheet，查看日志确认表格数据和状态列是否正确
+//  第三步：以上两步都正常后，再运行 scanAndSendEmails
+//
+//  注意：如果你的 Sheet 标签页名称是中文"工作表1"，
+//        请把下面 SHEET_NAME 改为 '工作表1'
+// ======================================================
+
+var SHEET_NAME = '工作表1';
+var HEADERS = ['Time', 'Username', 'Email', 'Plan', 'Location', 'Billing', 'Price', 'Status'];
+
+// ── 第一步：测试 GmailApp 是否能发邮件（发到你自己的 Gmail 账号）──
+// 运行后检查你的 Gmail 收件箱
+function sendTestEmail() {
+  var myEmail = Session.getActiveUser().getEmail();
+  GmailApp.sendEmail(
+    myEmail,
+    'GAS Test - GetWireGuard Script is Working',
+    'This is a test email from Google Apps Script. GmailApp is working correctly.',
+    { name: 'GetWireGuard Test' }
+  );
+  Logger.log('Test email sent to: ' + myEmail);
+}
+
+// ── 第二步：检查表格数据 ──
+// 运行后查看执行日志，确认每行的 email 和 status 值
+function debugSheet() {
+  Logger.log('=== debugSheet START ===');
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log('Spreadsheet: ' + ss.getName());
+
+  var sheets = ss.getSheets();
+  for (var s = 0; s < sheets.length; s++) {
+    Logger.log('Sheet[' + s + ']: ' + sheets[s].getName());
+  }
+
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    Logger.log('ERROR: Sheet "' + SHEET_NAME + '" not found!');
+    return;
+  }
+
+  var lastRow = sheet.getLastRow();
+  Logger.log('lastRow=' + lastRow);
+
+  if (lastRow < 2) {
+    Logger.log('No data rows.');
+    return;
+  }
+
+  var data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+  for (var i = 0; i < data.length; i++) {
+    var email  = data[i][2].toString();
+    var status = data[i][7].toString();
+    Logger.log('Row ' + (i+2) + ': email=[' + email + '] status=[' + status + '] statusLen=' + status.length);
+  }
+  Logger.log('=== debugSheet END ===');
+}
+
+// ── 接收前端 POST 请求，将订单数据写入 Google Sheets ──
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(SHEET_NAME);
+    }
+    if (sheet.getLastRow() == 0) {
+      sheet.appendRow(HEADERS);
+    }
+    var params    = e.parameter;
+    var username  = params.username || '';
+    var email     = params.email    || '';
+    var plan      = params.plan     || '';
+    var location  = params.location || '';
+    var billing   = params.billing  || '';
+    var price     = params.price    || '';
+    var timestamp = new Date();
+    var status    = '未沟通';
+    sheet.appendRow([timestamp, username, email, plan, location, billing, price, status]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'success', message: 'Order recorded' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ result: 'error', message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// ── 定时任务：扫描"未沟通"行，发送欢迎邮件，成功后改为"已沟通" ──
+function scanAndSendEmails() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  var data = sheet.getRange(2, 1, lastRow - 1, HEADERS.length).getValues();
+
+  for (var i = 0; i < data.length; i++) {
+    var row      = data[i];
+    var username = row[1].toString().trim();
+    var email    = row[2].toString().trim();
+    var plan     = row[3].toString().trim();
+    var location = row[4].toString().trim();
+    var billing  = row[5].toString().trim();
+    var price    = row[6].toString().trim();
+    var status   = row[7].toString().trim();
+
+    // status 为空（手动填入的数据没有初始状态）或为"未沟通"时都处理
+    if (status != '未沟通' && status != '') continue;
+    if (!email) continue;
+
+    try {
+      var subject = 'Welcome to GetWireGuard - Your Free Trial is Ready!';
+      var htmlBody = '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">'
+        + '<h2 style="color:#2d6a4f;">Welcome to GetWireGuard!</h2>'
+        + '<p>Hi <strong>' + username + '</strong>,</p>'
+        + '<p>Thank you for signing up! Your 7-day free trial has been activated.</p>'
+        + '<table style="border-collapse:collapse;width:100%;margin:16px 0;">'
+        + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f8f9fa;"><strong>Plan</strong></td><td style="padding:8px;border:1px solid #ddd;">' + plan + '</td></tr>'
+        + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f8f9fa;"><strong>Location</strong></td><td style="padding:8px;border:1px solid #ddd;">' + location + '</td></tr>'
+        + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f8f9fa;"><strong>Billing</strong></td><td style="padding:8px;border:1px solid #ddd;">' + billing + '</td></tr>'
+        + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f8f9fa;"><strong>Price after trial</strong></td><td style="padding:8px;border:1px solid #ddd;">' + price + '</td></tr>'
+        + '</table>'
+        + '<p>We will send your WireGuard <strong>.conf configuration file</strong> to this email address shortly.</p>'
+        + '<p>If you have any questions, feel free to contact us at <a href="mailto:info@mywireguard.com">info@mywireguard.com</a>.</p>'
+        + '<p style="color:#888;font-size:0.85em;">-- The GetWireGuard Team<br>info@mywireguard.com</p>'
+        + '</div>';
+
+      GmailApp.sendEmail(
+        email,
+        subject,
+        'Welcome to GetWireGuard! Your free trial is ready.',
+        { htmlBody: htmlBody, from: 'info@mywireguard.com', name: 'GetWireGuard' }
+      );
+
+      sheet.getRange(i + 2, 8).setValue('已沟通');
+
+    } catch (err) {
+      Logger.log('Row ' + (i + 2) + ' FAILED: ' + err.toString());
+    }
+  }
+}
