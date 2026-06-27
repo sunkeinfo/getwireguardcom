@@ -357,6 +357,14 @@
             document.body.removeChild(overlay);
         };
 
+        // 在绑定 onclick 之前，把所有需要的变量快照到闭包外层，确保值被正确捕获
+        var _email     = email;
+        var _name      = name;
+        var _planLabel = planLabel;
+        var _node      = selectedNode;
+        var _billing   = billing === 'monthly' ? 'Monthly' : 'Yearly';
+        var _price     = '$' + price;
+
         document.getElementById('btn-confirm-ok').onclick = function() {
             document.body.removeChild(overlay);
 
@@ -401,21 +409,18 @@
             .catch(function(e) { console.warn('Notification failed:', e); });
 
             // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响 PayPal 跳转）──
+            // 使用快照变量，确保闭包内值正确；GET 请求 + URL 参数，完全避免 CORS preflight 问题
             try {
-                var sheetParams = new URLSearchParams();
-                sheetParams.append('email', email);
-                sheetParams.append('username', name);
-                sheetParams.append('plan', planLabel);
-                sheetParams.append('location', selectedNode);
-                sheetParams.append('billing', billing === 'monthly' ? 'Monthly' : 'Yearly');
-                sheetParams.append('price', '$' + price);
-                fetch('https://script.google.com/macros/s/AKfycbxq3-9c_Pm7v1Q7D5Uww3rRm50NqOK3aF7dfFuNa0t2wyqtDQw3BKrbuwg_h-m8e4LVXw/exec', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: sheetParams.toString()
-                })
-                .then(function(r) { return r.json(); })
-                .then(function(d) { console.log('Google Sheets submitted:', d); })
+                var gasUrl = 'https://script.google.com/macros/s/AKfycbziQGq4YWNtABz8G3mA1sS8lHjYKjYFQO_gCnf39xILxC_GAiA5w05_Aalthk0c5bhi3Q/exec'
+                    + '?email='    + encodeURIComponent(_email)
+                    + '&username=' + encodeURIComponent(_name)
+                    + '&plan='     + encodeURIComponent(_planLabel)
+                    + '&location=' + encodeURIComponent(_node)
+                    + '&billing='  + encodeURIComponent(_billing)
+                    + '&price='    + encodeURIComponent(_price);
+                console.log('GAS URL:', gasUrl);
+                fetch(gasUrl, { method: 'GET', mode: 'no-cors' })
+                .then(function() { console.log('Google Sheets submitted.'); })
                 .catch(function(e) { console.warn('Google Sheets failed:', e); });
             } catch(e) {
                 console.warn('Google Sheets error:', e);
