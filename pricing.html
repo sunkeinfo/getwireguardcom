@@ -402,16 +402,17 @@
 
             // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响 PayPal 跳转）──
             try {
-                var formData = new FormData();
-                formData.append('email', email);
-                formData.append('username', name);
-                formData.append('plan', planLabel);
-                formData.append('location', selectedNode);
-                formData.append('billing', billing);
-                formData.append('price', '$' + price);
+                var sheetParams = new URLSearchParams();
+                sheetParams.append('email', email);
+                sheetParams.append('username', name);
+                sheetParams.append('plan', planLabel);
+                sheetParams.append('location', selectedNode);
+                sheetParams.append('billing', billing === 'monthly' ? 'Monthly' : 'Yearly');
+                sheetParams.append('price', '$' + price);
                 fetch('https://script.google.com/macros/s/AKfycbxq3-9c_Pm7v1Q7D5Uww3rRm50NqOK3aF7dfFuNa0t2wyqtDQw3BKrbuwg_h-m8e4LVXw/exec', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: sheetParams.toString()
                 })
                 .then(function(r) { return r.json(); })
                 .then(function(d) { console.log('Google Sheets submitted:', d); })
