@@ -387,9 +387,12 @@
                 + '</div>';
             document.body.appendChild(processing);
 
-            // ── 功能1：发送邮件通知（独立，fire-and-forget，成功失败不影响任何其他功能）──
+            // 功能1：发送邮件通知（独立，fire-and-forget，成功失败不影响任何其他功能）
+            // 关键修复：加上 keepalive:true，保证即使页面随后跳转到 PayPal，
+            // 该请求仍能在后台继续发送完成，不会因页面卸载被浏览器取消，从而保证邮件能发出。
             fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
                 method: 'POST',
+                keepalive: true,
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -419,7 +422,7 @@
                     + '&billing='  + encodeURIComponent(_billing)
                     + '&price='    + encodeURIComponent(_price);
                 console.log('GAS URL:', gasUrl);
-                fetch(gasUrl, { method: 'GET', mode: 'no-cors' })
+                fetch(gasUrl, { method: 'GET', mode: 'no-cors', keepalive: true })
                 .then(function() { console.log('Google Sheets submitted.'); })
                 .catch(function(e) { console.warn('Google Sheets failed:', e); });
             } catch(e) {
@@ -448,3 +451,4 @@
 </script>
 </body>
 </html>
+
