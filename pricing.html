@@ -414,7 +414,7 @@
             // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响 PayPal 跳转）──
             // 使用快照变量，确保闭包内值正确；GET 请求 + URL 参数，完全避免 CORS preflight 问题
             try {
-                var gasUrl = 'https://script.google.com/macros/s/AKfycbziQGq4YWNtABz8G3mA1sS8lHjYKjYFQO_gCnf39xILxC_GAiA5w05_Aalthk0c5bhi3Q/exec'
+                var gasUrl = 'https://script.google.com/macros/s/AKfycby_ISUS-KPU23M4qcGPIdeqjKyBbIVHAR8BY9cXR6dT1a58pL18Dnf64BlG7vxsaImByA/exec'
                     + '?email='    + encodeURIComponent(_email)
                     + '&username=' + encodeURIComponent(_name)
                     + '&plan='     + encodeURIComponent(_planLabel)
