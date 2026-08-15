@@ -368,28 +368,7 @@
         document.getElementById('btn-confirm-ok').onclick = function() {
             document.body.removeChild(overlay);
 
-            // Build PayPal URL (used by both success and fallback paths)
-            var paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick'
-                + '&business=' + encodeURIComponent('paypal2017august@sunke.info')
-                + '&item_name=' + encodeURIComponent('GetWireGuard - ' + planLabel + ' (' + billing + ') - ' + selectedNode)
-                + '&amount=' + price
-                + '&currency_code=USD'
-                + '&return=' + encodeURIComponent('https://getwireguard.com/index.html')
-                + '&cancel_return=' + encodeURIComponent('https://getwireguard.com/pricing.html');
-
-            // 显示"处理中"遮罩，给用户反馈
-            var processing = document.createElement('div');
-            processing.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
-            processing.innerHTML = '<div style="background:#fff;padding:32px 40px;border-radius:16px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);">'
-                + '<div style="font-size:2.2rem;margin-bottom:12px;">⏳</div>'
-                + '<div style="font-size:1.1rem;font-weight:600;color:#333;margin-bottom:6px;">Processing your order...</div>'
-                + '<div style="font-size:.85rem;color:#888;">Redirecting to PayPal in a moment</div>'
-                + '</div>';
-            document.body.appendChild(processing);
-
             // 功能1：发送邮件通知（独立，fire-and-forget，成功失败不影响任何其他功能）
-            // 关键修复：加上 keepalive:true，保证即使页面随后跳转到 PayPal，
-            // 该请求仍能在后台继续发送完成，不会因页面卸载被浏览器取消，从而保证邮件能发出。
             fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
                 method: 'POST',
                 keepalive: true,
@@ -411,10 +390,10 @@
             .then(function(d) { console.log('Notification sent:', d); })
             .catch(function(e) { console.warn('Notification failed:', e); });
 
-            // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响 PayPal 跳转）──
+            // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响支付弹窗）──
             // 使用快照变量，确保闭包内值正确；GET 请求 + URL 参数，完全避免 CORS preflight 问题
             try {
-                var gasUrl = 'https://script.google.com/macros/s/AKfycbwE8OnAtUYEri8kB4bMteHUd2XmoC2DHVF_L0xqG-FBVRQNHe1aH-D4Y7ks_MAIiFdYEg/exec'
+                var gasUrl = 'https://script.google.com/macros/s/AKfycbyoMbN-aw2V-GtjOG8mBcJ5pP-xFO-M8fZBdyznDsxuF_cHu-LogeUAKT-AhKMsuQCImQ/exec'
                     + '?email='    + encodeURIComponent(_email)
                     + '&username=' + encodeURIComponent(_name)
                     + '&plan='     + encodeURIComponent(_planLabel)
@@ -429,11 +408,18 @@
                 console.warn('Google Sheets error:', e);
             }
 
-            // ── 功能2：等待 1.5 秒后跳转 PayPal（给功能1和功能3足够时间，但不依赖它们的结果）──
-            setTimeout(function() {
-                window.location.href = paypalUrl;
-            }, 1500);
+            // ── 功能2：跳转到 Gumroad 结账页完成支付（邮箱/姓名已通过 URL 参数预填）──
+            window.location.href = buildGumroadCheckoutUrl(_email, _name);
         };
+    }
+
+    // 跳转链接：wanted=true 直接进入填卡页；email 和 Full name 参数预填，
+    // 客户不用在 Gumroad 页面重复输入已经填过的信息。
+    function buildGumroadCheckoutUrl(email, name) {
+        return 'https://snaagkster.gumroad.com/l/order'
+            + '?wanted=true'
+            + '&email=' + encodeURIComponent(email)
+            + '&' + encodeURIComponent('Full name') + '=' + encodeURIComponent(name);
     }
 </script>
 <!-- Chatwoot -->
