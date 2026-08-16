@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with USDT — AWSDO.COM</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0SXZXT6FBM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0SXZXT6FBM');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f4f7fa 100%);
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 1300px;
+            margin: auto;
+        }
+        header {
+            background: #ffffff;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        header .header-inner {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            justify-content: space-between;
+        }
+        header .logo { flex-shrink: 0; }
+        header .logo img { height: 44px; width: auto; display: block; }
+        nav ul {
+            padding: 0;
+            list-style: none;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+        nav ul li { display: inline; margin: 0 10px; }
+        nav a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+        nav a:hover, nav a.active { color: #007bff; }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            background: linear-gradient(135deg, #0a1628 0%, #0d2a5e 50%, #0056b3 100%);
+            color: #ffffff;
+            padding: 64px 0 96px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(0,123,255,0.18) 0%, transparent 60%);
+            animation: pulse-bg 6s ease-in-out infinite alternate;
+        }
+        @keyframes pulse-bg {
+            from { transform: scale(1); opacity: 0.6; }
+            to   { transform: scale(1.1); opacity: 1; }
+        }
+        .hero .container { position: relative; z-index: 1; }
+
+        .eyebrow {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #7dd3fc;
+            background: rgba(125, 211, 252, 0.12);
+            border: 1px solid rgba(125, 211, 252, 0.28);
+            border-radius: 999px;
+            padding: 6px 16px;
+            margin-bottom: 22px;
+        }
+        .hero h1 {
+            font-size: 44px;
+            margin: 0 0 14px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+        }
+        .hero h1 .highlight { color: #26e0a3; }
+        .hero .hero-sub {
+            font-size: 17px;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ---------- Hero: active payment state ---------- */
+        .hero-paying { display: none; }
+
+        /* Single unboxed headline — one uniform, non-bold size, kept above the countdown.
+           vw-based sizing keeps the whole line on one row at any desktop width. */
+        .pay-headline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3em;
+            white-space: nowrap;
+            font-size: clamp(17px, 2.55vw, 38px);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            margin-bottom: 0;
+            max-width: 100%;
+        }
+        .live-dot {
+            width: 0.3em;
+            height: 0.3em;
+            border-radius: 50%;
+            background: #26e0a3;
+            box-shadow: 0 0 0 0.12em rgba(38, 224, 163, 0.25);
+            animation: live-pulse 1.8s ease-in-out infinite;
+            flex-shrink: 0;
+            margin-right: 0.14em;
+        }
+        @keyframes live-pulse {
+            0%, 100% { opacity: 1;   transform: scale(1); }
+            50%      { opacity: 0.5; transform: scale(0.8); }
+        }
+        .ph-label { color: #7dd3fc; }
+        .ph-sep { color: rgba(255,255,255,0.35); }
+        .ph-email { color: #ffffff; }
+        .ph-verb { color: #a9c2dd; }
+        .ph-amount { color: #26e0a3; }
+
+        /* ---------- Countdown (sits in the card, level with the network tabs) ----------
+           min-height matches the .network-tabs row so this bar and the tabs share the
+           same horizontal band, which also lines up "How to pay" with the QR below. */
+        .countdown-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            min-height: 67px;
+            margin-bottom: 24px;
+        }
+        .countdown-bar.is-active { display: flex; }
+
+        .countdown-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #64748b;
+            line-height: 1.4;
+            max-width: 160px;
+        }
+        .countdown-digits {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+        }
+        .cd-seg {
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0d2a5e 0%, #0056b3 100%);
+            border-radius: 11px;
+            padding: 10px 14px;
+            min-width: 62px;
+            text-align: center;
+            box-shadow: 0 5px 14px rgba(0, 86, 179, 0.28);
+            font-variant-numeric: tabular-nums;
+        }
+        .cd-colon {
+            font-size: 24px;
+            font-weight: 700;
+            color: #94a3b8;
+            animation: colon-blink 1s step-end infinite;
+        }
+        @keyframes colon-blink {
+            50% { opacity: 0.25; }
+        }
+        .countdown-digits.urgent .cd-seg {
+            background: linear-gradient(135deg, #b91c1c 0%, #ef4444 100%);
+            box-shadow: 0 5px 14px rgba(239, 68, 68, 0.32);
+        }
+        .countdown-expired {
+            display: none;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #b91c1c;
+            line-height: 1.5;
+        }
+        .countdown-expired small {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* ---------- Payment card ---------- */
+        .pay-section { padding: 0 0 90px; }
+        .pay-card {
+            max-width: 1060px;
+            margin: -56px auto 0;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 26px 60px rgba(15, 23, 42, 0.14);
+            padding: 44px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 44px;
+            align-items: stretch;
+        }
+        .pay-col-left {
+            flex: 0 0 auto;
+            width: 396px;
+            text-align: center;
+        }
+        /* Full-height divider; content starts at the top so the countdown bar
+           lines up with the network tabs in the left column */
+        .pay-col-right {
+            flex: 1;
+            min-width: 0;
+            border-left: 1px solid #eef2f7;
+            padding-left: 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .network-tabs {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            border-radius: 14px;
+            padding: 6px;
+            margin-bottom: 24px;
+        }
+        .network-tab {
+            flex: 1;
+            text-align: center;
+            padding: 11px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #475569;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        .network-tab:hover { color: #0d2a5e; }
+        .network-tab.active {
+            background: #ffffff;
+            color: #0d2a5e;
+            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.14);
+        }
+        .network-tab .tab-note {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        .network-tab.active .tab-note { color: #0056b3; }
+
+        .qr-panel { display: none; }
+        .qr-panel.active { display: block; }
+
+        /* Gradient ring around the QR for a branded, solid look */
+        .qr-shell {
+            display: inline-block;
+            padding: 3px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #26e0a3 0%, #0891b2 45%, #0056b3 100%);
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+        }
+        .qr-frame {
+            width: 356px;
+            max-width: 100%;
+            border-radius: 19px;
+            overflow: hidden;
+            background: #fff;
+            padding: 10px;
+        }
+        /* Images keep their natural aspect ratio — no letterboxing */
+        .qr-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .network-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #047857;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            margin-top: 20px;
+        }
+        .scan-hint {
+            margin: 14px 0 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* ---------- Instructions ---------- */
+        .steps h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0d2a5e;
+            letter-spacing: -0.02em;
+            margin: 0 0 24px;
+        }
+        .steps ol {
+            list-style: none;
+            counter-reset: step;
+            margin: 0;
+            padding: 0;
+        }
+        .steps ol li {
+            counter-increment: step;
+            position: relative;
+            padding-left: 46px;
+            margin-bottom: 22px;
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.65;
+        }
+        .steps ol li:last-child { margin-bottom: 0; }
+        .steps ol li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 1px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d2a5e 0%, #0056b3 100%);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0, 86, 179, 0.28);
+        }
+        .steps ol li strong { color: #1e293b; font-weight: 700; }
+
+        footer {
+            background: #0a1628;
+            color: #94a3b8;
+            padding: 28px 0;
+            text-align: center;
+            font-size: 13px;
+        }
+        footer p { margin: 0; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 940px) {
+            .pay-card { flex-direction: column; gap: 34px; padding: 34px; align-items: stretch; }
+            .pay-col-left { width: 100%; }
+            .pay-col-right {
+                border-left: none;
+                border-top: 1px solid #eef2f7;
+                padding-left: 0;
+                padding-top: 32px;
+            }
+        }
+        @media (max-width: 760px) {
+            /* Let the headline wrap once there is no room for a single line */
+            .pay-headline {
+                flex-wrap: wrap;
+                white-space: normal;
+                font-size: 26px;
+                gap: 0.2em 0.32em;
+            }
+            .pay-headline .ph-label { flex-basis: 100%; }
+            .pay-headline .ph-sep { display: none; }
+            /* Long addresses must break rather than widen the page */
+            .ph-email { overflow-wrap: anywhere; word-break: break-word; min-width: 0; }
+        }
+        @media (max-width: 620px) {
+            /* Stack the header so the nowrap nav links can't widen the page */
+            header .header-inner { flex-direction: column; gap: 12px; }
+            nav ul { justify-content: center; }
+            nav ul li { margin: 0 7px; }
+            nav a { font-size: 13.5px; }
+
+            .hero { padding: 48px 0 90px; }
+            .hero h1 { font-size: 30px; }
+            .pay-headline { font-size: 22px; }
+            .cd-seg { font-size: 26px; min-width: 54px; padding: 9px 11px; }
+            .countdown-bar { min-height: 0; gap: 12px; }
+            .countdown-label { font-size: 11px; max-width: 130px; }
+            .pay-card { margin: -50px auto 0; padding: 24px; border-radius: 18px; }
+            .qr-frame { width: 100%; }
+            .network-tab { font-size: 12.5px; padding: 10px 4px; }
+            .steps h3 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="logo">
+                    <a href="index.html"><img src="logo621.svg" alt="AWSDO.COM Logo" height="44"></a>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="linux-server.html">Linux Cloud</a></li>
+                        <li><a href="windows-server.html">Windows Servers</a></li>
+                        <li><a href="residential-ip-server.html">Residential IP Servers</a></li>
+                        <li><a href="performance-server.html">Performance Servers</a></li>
+                        <li><a href="api-tokens.html">AI API Tokens</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+
+            <!-- Default state: no email/amount passed in the URL -->
+            <div id="heroDefault">
+                <span class="eyebrow">Crypto Checkout</span>
+                <h1>Pay with <span class="highlight">USDT</span></h1>
+                <p class="hero-sub">Scan the QR code with your Binance app or any compatible wallet to complete your payment securely.</p>
+            </div>
+
+            <!-- Active state: ?email= &amount= supplied by the referring page -->
+            <div id="heroPaying" class="hero-paying">
+                <div class="pay-headline">
+                    <span class="live-dot"></span>
+                    <span class="ph-sep">·</span>
+                    <span class="ph-email" id="payEmail"></span>
+                    <span class="ph-verb">is paying</span>
+                    <span class="ph-amount"><span id="payAmount"></span><span class="cur">USD</span></span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="pay-section">
+        <div class="container">
+            <div class="pay-card">
+
+                <div class="pay-col-left">
+                    <div class="network-tabs" id="networkTabs">
+                        <button class="network-tab active" data-network="trx">
+                            TRC20
+                            <span class="tab-note">Tron · Low Fee</span>
+                        </button>
+                        <button class="network-tab" data-network="bsc">
+                            BEP20
+                            <span class="tab-note">BNB Smart Chain</span>
+                        </button>
+                        <button class="network-tab" data-network="eth">
+                            ERC20
+                            <span class="tab-note">Ethereum</span>
+                        </button>
+                    </div>
+
+                    <!-- TRC20 / TRON -->
+                    <div class="qr-panel active" data-network="trx">
+                        <div class="qr-shell">
+                            <div class="qr-frame">
+                                <img src="usdt-binance/trx-usdt-binance.jpeg" alt="USDT TRC20 payment QR code">
+                            </div>
+                        </div>
+                        <div><span class="network-badge">🟢 USDT · TRC20 (TRON)</span></div>
+                    </div>
+
+                    <!-- BEP20 / BSC -->
+                    <div class="qr-panel" data-network="bsc">
+                        <div class="qr-shell">
+                            <div class="qr-frame">
+                                <img src="usdt-binance/bsc-usdt-binance.jpeg" alt="USDT BEP20 payment QR code">
+                            </div>
+                        </div>
+                        <div><span class="network-badge">🟡 USDT · BEP20 (BNB Smart Chain)</span></div>
+                    </div>
+
+                    <!-- ERC20 / ETH -->
+                    <div class="qr-panel" data-network="eth">
+                        <div class="qr-shell">
+                            <div class="qr-frame">
+                                <img src="usdt-binance/eth-usdt-binance.jpeg" alt="USDT ERC20 payment QR code">
+                            </div>
+                        </div>
+                        <div><span class="network-badge">🔵 USDT · ERC20 (Ethereum)</span></div>
+                    </div>
+
+                    <p class="scan-hint">Open your wallet app and scan the code above</p>
+                </div>
+
+                <div class="pay-col-right">
+                    <!-- Shown by JS only when ?email= &amount= are supplied -->
+                    <div class="countdown-bar" id="countdownBar">
+                        <span class="countdown-label">Complete your payment within</span>
+                        <div class="countdown-digits" id="countdownDigits">
+                            <span class="cd-seg" id="cdMinutes">10</span>
+                            <span class="cd-colon">:</span>
+                            <span class="cd-seg" id="cdSeconds">00</span>
+                        </div>
+                        <div class="countdown-expired" id="countdownExpired">
+                            Payment window expired
+                            <small>Refresh the page or contact support to start a new payment.</small>
+                        </div>
+                    </div>
+
+                    <div class="steps">
+                        <h3>How to pay</h3>
+                        <ol>
+                            <li>Select the correct network on the left — it <strong>must match</strong> the network your wallet sends on.</li>
+                            <li>Open your Binance app or wallet and choose <strong>Send / Withdraw USDT</strong>.</li>
+                            <li>Scan the QR code, or copy the wallet address into your wallet manually.</li>
+                            <li>Enter the exact amount shown above and confirm the transaction.</li>
+                        </ol>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AWSDO.COM. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tabs = document.querySelectorAll('.network-tab');
+        const panels = document.querySelectorAll('.qr-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const network = tab.dataset.network;
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`.qr-panel[data-network="${network}"]`).classList.add('active');
+            });
+        });
+    </script>
+
+    <!-- Reads ?email= and ?amount= from the URL (set by the referring page) and switches the hero into a live payment view with a 10-minute countdown -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const payEmail = urlParams.get('email');
+        const payAmountRaw = urlParams.get('amount');
+        const payAmount = payAmountRaw !== null ? parseFloat(payAmountRaw) : NaN;
+
+        if (payEmail && !isNaN(payAmount)) {
+            document.getElementById('heroDefault').style.display = 'none';
+            document.getElementById('heroPaying').style.display = 'block';
+            document.getElementById('payEmail').textContent = payEmail;
+            document.getElementById('payAmount').textContent = payAmount.toFixed(2);
+
+            document.getElementById('countdownBar').classList.add('is-active');
+
+            const digitsEl = document.getElementById('countdownDigits');
+            const minutesEl = document.getElementById('cdMinutes');
+            const secondsEl = document.getElementById('cdSeconds');
+            const expiredEl = document.getElementById('countdownExpired');
+
+            let remainingSeconds = 10 * 60;
+
+            const renderTimer = () => {
+                minutesEl.textContent = String(Math.floor(remainingSeconds / 60)).padStart(2, '0');
+                secondsEl.textContent = String(remainingSeconds % 60).padStart(2, '0');
+                // Turn the digits red for the final minute
+                if (remainingSeconds <= 60) digitsEl.classList.add('urgent');
+            };
+            renderTimer();
+
+            const countdownInterval = setInterval(() => {
+                remainingSeconds--;
+                if (remainingSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    digitsEl.style.display = 'none';
+                    document.querySelector('.countdown-label').style.display = 'none';
+                    expiredEl.style.display = 'block';
+                    return;
+                }
+                renderTimer();
+            }, 1000);
+        }
+    </script>
+
+    <!--聊天模块-->
+    <script>
+      window.chatwootSettings = {"position":"right","type":"expanded_bubble","launcherTitle":"Online Chat"};
+      (function(d,t) {
+        var BASE_URL="https://app.chatwoot.com/";
+        var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        g.src=BASE_URL+"/packs/js/sdk.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g,s);
+        g.onload=function(){
+          window.chatwootSDK.run({
+            websiteToken: 'c3stLVCV9GDjtvHcBMLdjRjU',
+            baseUrl: BASE_URL
+          })
+        }
+      })(document,"script");
+    </script>
+
+</body>
+</html>
