@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireGuard Config Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .download-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .qrcode-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .qrcode-container h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .config-preview {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            #qrcode canvas {
+                max-width: 100%;
+                height: auto !important;
+            }
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 WireGuard Config Generator</h1>
+        <p class="subtitle">Generate custom WireGuard configuration files instantly</p>
+
+        <div class="input-group">
+            <label for="domainInput">Enter Your Domain</label>
+            <input 
+                type="text" 
+                id="domainInput" 
+                placeholder="example.com" 
+                autocomplete="off"
+            >
+            <div class="input-hint">Enter the domain or IP address for your WireGuard endpoint</div>
+        </div>
+
+        <button class="btn" onclick="generateConfig()">Generate Configuration</button>
+
+        <div class="result-section" id="resultSection">
+            <div class="success-message">
+                ✅ Configuration generated successfully!
+            </div>
+
+            <a href="#" class="download-btn" id="downloadBtn">
+                <span>📥</span>
+                <span>Download Configuration File</span>
+            </a>
+
+            <div class="qrcode-container">
+                <h3>Scan QR Code</h3>
+                <div id="qrcode"></div>
+                <p style="margin-top: 12px; font-size: 13px; color: #666;">
+                    Scan with WireGuard mobile app to import
+                </p>
+            </div>
+
+            <div class="config-preview" id="configPreview"></div>
+        </div>
+
+        <div class="footer">
+            Powered by JavaScript • Privacy-First • No Server Required
+        </div>
+    </div>
+
+    <script>
+        // WireGuard configuration template
+        const CONFIG_TEMPLATE = `[Interface]
+PrivateKey = UFm3nqvjaeSZxXoYMR9cHlxYBXQteDX9ljLeZq2F4XQ=
+Address = 10.66.66.2/32,fd42:42:42::2/128
+DNS = 1.1.1.1,1.0.0.1
+
+# Uncomment the next line to set a custom MTU
+# This might impact performance, so use it only if you know what you are doing
+# See https://github.com/nitred/nr-wg-mtu-finder to find your optimal MTU
+# MTU = 1420
+
+[Peer]
+PublicKey = lnq6nzMvAQX9kcae783Q02xd2fC1MGLdjwDx00/8LRM=
+PresharedKey = NyA2/XK7J1S7pbgT0eF9zYpKMfQKb1/PGn3sUuBgry8=
+Endpoint = {DOMAIN}:61945
+AllowedIPs = 0.0.0.0/0,::/0
+`;
+
+        // Original domain from the template
+        const ORIGINAL_DOMAIN = 'sawraymondhero.gmail.com.thailand.shared.mywireguard.com';
+
+        function generateConfig() {
+            const domainInput = document.getElementById('domainInput');
+            const domain = domainInput.value.trim();
+
+            // Validate input
+            if (!domain) {
+                alert('Please enter a domain or IP address');
+                domainInput.focus();
+                return;
+            }
+
+            // Generate configuration content
+            const configContent = CONFIG_TEMPLATE.replace('{DOMAIN}', domain);
+            const filename = `${domain}.conf`;
+
+            // Display result section
+            const resultSection = document.getElementById('resultSection');
+            resultSection.classList.add('show');
+
+            // Setup download button
+            setupDownload(configContent, filename);
+
+            // Generate QR code
+            generateQRCode(configContent);
+
+            // Show preview
+            showPreview(configContent);
+
+            // Smooth scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function setupDownload(content, filename) {
+            const downloadBtn = document.getElementById('downloadBtn');
+            
+            // Create blob with proper MIME type
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            // Update download link
+            downloadBtn.href = url;
+            downloadBtn.download = filename;
+            
+            // Update button text with filename
+            downloadBtn.innerHTML = `
+                <span>📥</span>
+                <span>Download ${filename}</span>
+            `;
+        }
+
+        function generateQRCode(content) {
+            const qrcodeContainer = document.getElementById('qrcode');
+            
+            // Clear previous QR code
+            qrcodeContainer.innerHTML = '';
+            
+            // Generate new QR code
+            new QRCode(qrcodeContainer, {
+                text: content,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+
+        function showPreview(content) {
+            const previewContainer = document.getElementById('configPreview');
+            previewContainer.textContent = content;
+        }
+
+        // Allow Enter key to trigger generation
+        document.getElementById('domainInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateConfig();
+            }
+        });
+
+        // Auto-focus input on page load
+        window.addEventListener('load', function() {
+            document.getElementById('domainInput').focus();
+        });
+    </script>
+</body>
+</html>
