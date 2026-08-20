@@ -1,0 +1,12 @@
+{
+  "name": "getwireguard",
+  "version": "1.0.0",
+  "description": "GetWireGuard — Cloudflare Pages + Waffo Pancake",
+  "type": "module",
+  "dependencies": {
+    "@waffo/pancake-ts": "latest"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
