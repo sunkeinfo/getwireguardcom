@@ -254,7 +254,6 @@
             <div class="col-lg-2 col-md-4 col-6">
                 <h6 class="site-footer-title mb-3">Legal</h6>
                 <ul class="site-footer-links">
-                    <li class="site-footer-link-item"><a href="privacy-policy.html" class="site-footer-link">Privacy Policy</a></li>
                     <li class="site-footer-link-item"><a href="refund-policy.html" class="site-footer-link">Refund Policy</a></li>
                     <li class="site-footer-link-item"><a href="terms.html" class="site-footer-link">Terms of Service</a></li>
                 </ul>
@@ -319,12 +318,6 @@
     document.getElementById('customerEmail').addEventListener('input', updateSummary);
     document.getElementById('customerName').addEventListener('input', updateSummary);
 
-    // ── Waffo Pancake Checkout API endpoint ──────────────────────────────────
-    // Points to your deployed api/checkout.js server.
-    // Change this to your production URL when deploying, e.g.:
-    //   var CHECKOUT_API = 'https://api.getwireguard.com/api/checkout';
-    var CHECKOUT_API = '/api/checkout';
-
     function placeOrder() {
         if (!selectedPlan || !selectedNode) return;
 
@@ -364,20 +357,18 @@
             document.body.removeChild(overlay);
         };
 
-        // 快照所有需要的变量，确保闭包内值正确
+        // 在绑定 onclick 之前，把所有需要的变量快照到闭包外层，确保值被正确捕获
         var _email     = email;
         var _name      = name;
         var _planLabel = planLabel;
         var _node      = selectedNode;
-        var _plan      = selectedPlan;
-        var _billing   = billing;
-        var _billingLabel = billing === 'monthly' ? 'Monthly' : 'Yearly';
+        var _billing   = billing === 'monthly' ? 'Monthly' : 'Yearly';
         var _price     = '$' + price;
 
         document.getElementById('btn-confirm-ok').onclick = function() {
             document.body.removeChild(overlay);
 
-            // 功能1：发送邮件通知（独立，fire-and-forget）
+            // 功能1：发送邮件通知（独立，fire-and-forget，成功失败不影响任何其他功能）
             fetch('https://api.notificationapi.com/097bululbdjfm969xrmrijiz43/sender', {
                 method: 'POST',
                 keepalive: true,
@@ -390,7 +381,7 @@
                     type: 'awsdo_com_notification',
                     to: { id: 'snaagk@gmail.com', email: 'snaagk@gmail.com' },
                     parameters: {
-                        comment: 'New GetWireGuard Order:\n\nName: ' + _name + '\nEmail: ' + _email + '\nPlan: ' + _planLabel + '\nLocation: ' + _node + '\nBilling: ' + _billing + '\nPrice: ' + _price + '\nTime: ' + new Date().toISOString()
+                        comment: 'New GetWireGuard Order:\n\nName: ' + name + '\nEmail: ' + email + '\nPlan: ' + planLabel + '\nLocation: ' + selectedNode + '\nBilling: ' + billing + '\nPrice: $' + price + '\nTime: ' + new Date().toISOString()
                     },
                     templateId: 'awsdo_com'
                 })
@@ -399,15 +390,17 @@
             .then(function(d) { console.log('Notification sent:', d); })
             .catch(function(e) { console.warn('Notification failed:', e); });
 
-            // 功能2：提交数据到 Google Sheets（独立，fire-and-forget）
+            // ── 功能3：提交数据到 Google Sheets（独立，fire-and-forget，成功失败不影响支付弹窗）──
+            // 使用快照变量，确保闭包内值正确；GET 请求 + URL 参数，完全避免 CORS preflight 问题
             try {
                 var gasUrl = 'https://script.google.com/macros/s/AKfycbyoMbN-aw2V-GtjOG8mBcJ5pP-xFO-M8fZBdyznDsxuF_cHu-LogeUAKT-AhKMsuQCImQ/exec'
                     + '?email='    + encodeURIComponent(_email)
                     + '&username=' + encodeURIComponent(_name)
                     + '&plan='     + encodeURIComponent(_planLabel)
                     + '&location=' + encodeURIComponent(_node)
-                    + '&billing='  + encodeURIComponent(_billingLabel)
+                    + '&billing='  + encodeURIComponent(_billing)
                     + '&price='    + encodeURIComponent(_price);
+                console.log('GAS URL:', gasUrl);
                 fetch(gasUrl, { method: 'GET', mode: 'no-cors', keepalive: true })
                 .then(function() { console.log('Google Sheets submitted.'); })
                 .catch(function(e) { console.warn('Google Sheets failed:', e); });
@@ -415,48 +408,20 @@
                 console.warn('Google Sheets error:', e);
             }
 
-            // 功能3：通过 Waffo Pancake 创建 checkout session，然后在新标签页打开支付页
-            openWaffoPancakeCheckout(_email, _name, _plan, _billing, _node);
+            // ── 功能2：跳转到 Pancake 支付网关完成支付（邮箱已通过 URL 参数预填）──
+            window.location.href = buildPancakeCheckoutUrl(_email);
         };
     }
 
-    /**
-     * 调用服务端 /api/checkout 获取 Waffo Pancake checkoutUrl，
-     * 按照 SKILL.md 规范：使用 window.open() 在新标签页打开，
-     * 不使用 window.location.href（会丢失商户页面状态）。
-     */
-    function openWaffoPancakeCheckout(email, name, plan, billing, node) {
-        var btn = document.getElementById('btn-order');
-        var originalText = btn ? btn.textContent : '';
-        if (btn) { btn.disabled = true; btn.textContent = 'Redirecting to checkout…'; }
-
-        fetch(CHECKOUT_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                plan:    plan,
-                billing: billing,
-                node:    node,
-                email:   email,
-                name:    name
-            })
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data.checkoutUrl) {
-                // ✅ Open in new tab — preserves merchant page state (per SKILL.md)
-                window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
-            } else {
-                alert('Could not create checkout session: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(function(e) {
-            console.error('Checkout API error:', e);
-            alert('Could not connect to checkout service. Please try again or contact support.');
-        })
-        .finally(function() {
-            if (btn) { btn.disabled = false; btn.textContent = originalText; }
-        });
+    // 跳转到 Pancake 支付链接，将邮箱地址作为 URL 参数传递
+    // 支付网关将自动预填邮箱字段，提高转化率
+    function buildPancakeCheckoutUrl(email) {
+        var paymentLinks = {
+            shared:    'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_4FqTbOFpuQjCkx9Sg5nUqC?type=subscription&currency=USD',
+            dedicated: 'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_2qWhSvNdwFiJwlrkIZfuFW?type=subscription&currency=USD'
+        };
+        var baseUrl = paymentLinks[selectedPlan];
+        return baseUrl + '&email=' + encodeURIComponent(email);
     }
 </script>
 <!-- Chatwoot -->
