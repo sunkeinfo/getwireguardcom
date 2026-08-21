@@ -414,13 +414,29 @@
     }
 
     // 跳转到 Pancake 支付链接，将邮箱地址作为 URL 参数传递
+    // 支持月度和年度两种计费方式
     // 支付网关将自动预填邮箱字段，提高转化率
     function buildPancakeCheckoutUrl(email) {
         var paymentLinks = {
-            shared:    'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_4FqTbOFpuQjCkx9Sg5nUqC?type=subscription&currency=USD',
-            dedicated: 'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_2qWhSvNdwFiJwlrkIZfuFW?type=subscription&currency=USD'
+            // 月度计费
+            shared_monthly:    'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_4FqTbOFpuQjCkx9Sg5nUqC?type=subscription&currency=USD',
+            dedicated_monthly: 'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_2qWhSvNdwFiJwlrkIZfuFW?type=subscription&currency=USD',
+            // 年度计费
+            shared_yearly:     'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_1NSqd3AXHe9un744WmpPSr?type=subscription&currency=USD',
+            dedicated_yearly:  'https://pancake.waffo.ai/store/getwireguard-com-6f2horuw/product/PROD_5IhLgwPLBzXaeUdvMR9jyM?type=subscription&currency=USD'
         };
-        var baseUrl = paymentLinks[selectedPlan];
+        
+        // 根据选择的计划和计费周期构建 key
+        var planKey = selectedPlan + '_' + billing;
+        var baseUrl = paymentLinks[planKey];
+        
+        // 如果没有找到对应的链接，使用默认（不应该发生）
+        if (!baseUrl) {
+            console.error('Payment link not found for plan: ' + planKey);
+            return paymentLinks['shared_monthly'];
+        }
+        
+        // 将邮箱地址作为 URL 参数传递
         return baseUrl + '&email=' + encodeURIComponent(email);
     }
 </script>
